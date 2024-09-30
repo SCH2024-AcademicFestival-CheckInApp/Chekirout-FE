@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "../styles/globals.css";
 
 export const metadata: Metadata = {
@@ -9,21 +9,26 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   keywords:
     "순천향대학교, SW/AI FESTIVAL, 학술제, 앱 경진대회, 출석체크, Chekirout",
-  themeColor: [{ media: "(prefers-color-scheme: dark)", color: "#235698" }],
   authors: [
     {
       name: "Team 체키라웃",
       url: "https://github.com/SCH2024-AcademicFestival-CheckInApp",
     },
   ],
-  viewport:
-    "minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover",
   icons: [
     {
       rel: "icon",
       url: "assets/icon192.png",
     },
   ],
+};
+
+export const viewport: Viewport = {
+  themeColor: [{ media: "(prefers-color-scheme: dark)", color: "#235698" }],
+  width: "device-width",
+  initialScale: 1,
+  minimumScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
