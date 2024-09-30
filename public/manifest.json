@@ -1,0 +1,22 @@
+{
+  "name": "CHEKIROUT",
+  "short_name": "CHEKIROUT",
+  "description": "순천향대학교 SW/AI FESTIVAL 내가 만든 학술제 앱 경진대회 출품을 위해 제작된 출석체크 PWA 어플리케이션입니다.",
+  "background_color": "#235698",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/assets/icon192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icon512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
