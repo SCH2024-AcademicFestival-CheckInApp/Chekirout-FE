@@ -38,11 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="flex justify-center items-center min-h-screen bg-gray-200">
-        <div className="w-full max-w-[480px] min-h-screen bg-white shadow-md overflow-hidden flex flex-col items-center justify-center">
-          {children}
-        </div>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

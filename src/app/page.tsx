@@ -1,9 +1,11 @@
 import Splash from "@/components/Splash";
 import { Button } from "@/components/ui/button";
+import UserGlobalLayout from "@/components/UserGlobalLayout";
 import Image from "next/image";
 
 export default function Home() {
   return (
+    <UserGlobalLayout>
     <main className="w-full h-screen flex flex-col justify-between items-center bg-white ">
       <Splash />
       <div className="text-center pt-[160px]">
@@ -22,5 +24,6 @@ export default function Home() {
         </Button>
       </div>
     </main>
+    </UserGlobalLayout>
   );
 }
