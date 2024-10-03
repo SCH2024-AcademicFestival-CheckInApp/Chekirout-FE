@@ -1,4 +1,5 @@
-import UserLayout from "@/components/UserLayout";
+import UserGlobalLayout from "@/components/UserGlobalLayout";
+
 
 export default function AuthLayout({
   children,
@@ -6,6 +7,6 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <UserLayout>{children}</UserLayout>
+    <UserGlobalLayout>{children}</UserGlobalLayout>
   );
 }
