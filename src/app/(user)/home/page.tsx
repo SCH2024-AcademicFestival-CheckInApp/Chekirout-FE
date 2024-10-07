@@ -60,7 +60,7 @@ export default function HomePage() {
                                 onTouchEnd={() => setHoveredStamp(null)}
                             >
                                 {stamp.completed ? <Stamp /> : <EmptyStamp />}
-                                    {hoveredStamp === stamp.id && (
+                                    {stamp.completed && hoveredStamp === stamp.id && (
                                         <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded-full text-[10px] text-gray-600 whitespace-nowrap">
                                             {stamp.info}
                                         </div>
