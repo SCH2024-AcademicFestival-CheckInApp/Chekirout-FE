@@ -63,7 +63,7 @@ export default function HomePage() {
                             ))}
                         </div>
                     </div>
-                    <div className="bg-[#E6EDF5] rounded-b-lg p-3 text-center" />
+                    <div className="bg-[#CFD9E6] rounded-b-lg p-3 text-center" />
                     <div className="text-center font-bold text-xl mt-8">
                         🎉 &nbsp; 현재 <span className="text-blue-900">62</span>명이 참여중이에요!
                     </div>
