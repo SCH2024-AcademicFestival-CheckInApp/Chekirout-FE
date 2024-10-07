@@ -1,4 +1,5 @@
 import BottomNav from "@/components/BottonNav";
+import TopNav from "@/components/TopNav";
 import UserGlobalLayout from "@/components/UserGlobalLayout";
 
 export default function UserLayout({
@@ -8,7 +9,9 @@ export default function UserLayout({
 }) {
   return (
     <UserGlobalLayout>
-      {children} <BottomNav />
+      <TopNav />
+      {children}
+      <BottomNav />
     </UserGlobalLayout>
   );
 }
