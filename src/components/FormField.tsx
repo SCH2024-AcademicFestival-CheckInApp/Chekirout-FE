@@ -8,20 +8,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { Control } from "react-hook-form";
 
-interface TextFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   control: Control<any>;
   name: string;
   label: string;
-  disabled?: boolean;
 }
 
-export const TextField = ({
+export const InputField = ({
   control,
   name,
   label,
-  disabled,
+  type = "text",
   ...props
-}: TextFieldProps) => (
+}: InputFieldProps) => (
   <FormField
     control={control}
     name={name}
@@ -29,7 +28,7 @@ export const TextField = ({
       <FormItem>
         <FormLabel>{label}</FormLabel>
         <FormControl>
-          <Input {...field} disabled={disabled} className="w-full" {...props} />
+          <Input {...field} type={type} className="w-full" {...props} />
         </FormControl>
         <FormMessage />
       </FormItem>
@@ -37,21 +36,8 @@ export const TextField = ({
   />
 );
 
-export const PasswordField = ({
-  control,
-  name,
-  label,
-  ...props
-}: {
-  control: Control<any>;
-  name: string;
-  label: string;
-}) => (
-  <TextField
-    control={control}
-    name={name}
-    label={label}
-    type="password"
-    {...props}
-  />
+export const TextField = (props: InputFieldProps) => <InputField {...props} />;
+
+export const PasswordField = (props: InputFieldProps) => (
+  <InputField {...props} type="password" />
 );
