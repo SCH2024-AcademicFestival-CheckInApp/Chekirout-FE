@@ -1,3 +1,5 @@
+import BottomNav from "@/components/BottonNav";
+import TopNav from "@/components/TopNav";
 import UserGlobalLayout from "@/components/UserGlobalLayout";
 
 export default function UserLayout({
@@ -6,6 +8,10 @@ export default function UserLayout({
   children: React.ReactNode;
 }) {
   return (
-    <UserGlobalLayout>{children}</UserGlobalLayout>
+    <UserGlobalLayout>
+      <TopNav />
+      {children}
+      <BottomNav />
+    </UserGlobalLayout>
   );
 }
