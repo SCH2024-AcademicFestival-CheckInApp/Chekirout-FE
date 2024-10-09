@@ -14,6 +14,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import axios from "axios";
 
 const FormSchema = z.object({
   username: z.string().min(8, {
@@ -25,6 +28,8 @@ const FormSchema = z.object({
 });
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -33,10 +38,31 @@ export default function LoginPage() {
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log("로그인 시도");
-  }
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        "http://ec2-15-165-241-189.ap-northeast-2.compute.amazonaws.com:8080/api/v1/login",
+        {
+          username: data.username,
+          password: data.password,
+        }
+      );
 
+      if (response.status === 200) {
+        console.log("로그인 성공");
+        console.log(response.data);
+        localStorage.setItem("accessToken", response.data.accessToken); 
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+        router.push("/user/mypage"); 
+      }
+    } catch (error) {
+      console.error("로그인 오류:", error);
+      console.log("로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
   return (
     <main className="w-[480px] h-screen flex flex-col items-center bg-white">
       <div className="text-center pt-[200px] mb-20">
