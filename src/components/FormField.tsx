@@ -15,10 +15,12 @@ import {
 } from "@/components/ui/select";
 import { Control } from "react-hook-form";
 
-interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputFieldProps {
   control: Control<any>;
   name: string;
   label: string;
+  type?: string;
+  placeholder?: string;
 }
 
 export const InputField = ({
@@ -50,42 +52,44 @@ export const PasswordField = (props: InputFieldProps) => (
 );
 
 interface SelectFieldProps {
-  control: Control<any>;
-  name: string;
   label: string;
-  options: string[];
-  placeholder: string;
+  name: string;
+  control: Control<any>;
+  options: { value: string; label: string }[];
+  placeholder?: string;
 }
 
-export const SelectField = ({
-  control,
-  name,
+export const SelectField: React.FC<SelectFieldProps> = ({
   label,
+  name,
+  control,
   options,
   placeholder,
-}: SelectFieldProps) => (
-  <FormField
-    control={control}
-    name={name}
-    render={({ field }) => (
-      <FormItem>
-        <FormLabel>{label}</FormLabel>
-        <Select onValueChange={field.onChange} defaultValue={field.value}>
-          <FormControl>
-            <SelectTrigger>
-              <SelectValue placeholder={placeholder} />
-            </SelectTrigger>
-          </FormControl>
-          <SelectContent>
-            {options.map((option) => (
-              <SelectItem key={option} value={option}>
-                {option}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <FormMessage />
-      </FormItem>
-    )}
-  />
-);
+}) => {
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder={placeholder} />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              {options.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+};
