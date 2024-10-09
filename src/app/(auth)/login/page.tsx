@@ -42,7 +42,7 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        "http://ec2-15-165-241-189.ap-northeast-2.compute.amazonaws.com:8080/api/v1/login",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/login`,
         {
           username: data.username,
           password: data.password,
@@ -51,7 +51,6 @@ export default function LoginPage() {
 
       if (response.status === 200) {
         console.log("로그인 성공");
-        // console.log(response.data);
         localStorage.setItem("accessToken", response.data.accessToken); 
         localStorage.setItem("refreshToken", response.data.refreshToken);
          router.push("/home"); 

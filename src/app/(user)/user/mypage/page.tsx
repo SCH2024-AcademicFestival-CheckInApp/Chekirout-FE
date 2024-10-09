@@ -29,7 +29,7 @@ export default function MyPage() {
     const fetchUserInfo = async () => {
       try {
         const response = await axios.get(
-          "http://ec2-15-165-241-189.ap-northeast-2.compute.amazonaws.com:8080/api/v1/users/profile",
+          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/profile`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
