@@ -25,13 +25,8 @@ export default function MyPage() {
       router.push("/login");
       return;
     }
+
     const fetchUserInfo = async () => {
-      const accessToken = localStorage.getItem("accessToken");
-      if (!accessToken) {
-        router.push("/login");
-        return;
-      }
-    
       try {
         const response = await axios.get(
           "http://ec2-15-165-241-189.ap-northeast-2.compute.amazonaws.com:8080/api/v1/users/profile",
