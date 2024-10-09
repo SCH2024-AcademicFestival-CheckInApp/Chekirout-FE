@@ -51,10 +51,10 @@ export default function LoginPage() {
 
       if (response.status === 200) {
         console.log("로그인 성공");
-        console.log(response.data);
+        // console.log(response.data);
         localStorage.setItem("accessToken", response.data.accessToken); 
         localStorage.setItem("refreshToken", response.data.refreshToken);
-        router.push("/user/mypage"); 
+         router.push("/home"); 
       }
     } catch (error) {
       console.error("로그인 오류:", error);
