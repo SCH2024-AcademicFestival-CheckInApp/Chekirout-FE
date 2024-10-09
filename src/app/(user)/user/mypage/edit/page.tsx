@@ -5,7 +5,21 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { TextField, PasswordField } from "@/components/FormField";
 import { Device } from "@/components/Device";
@@ -32,6 +46,41 @@ const formSchema = z
     message: "새 비밀번호가 일치하지 않습니다.",
     path: ["confirmPassword"],
   });
+
+const departments = [
+  "컴퓨터소프트웨어공학과",
+  "의료 IT공학과",
+  "정보보호학과",
+  "사물인터넷학과",
+  "메타버스게임학과",
+];
+
+const DepartmentSelect = ({ control }: { control: any }) => (
+  <FormField
+    control={control}
+    name="department"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>학과</FormLabel>
+        <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <FormControl>
+            <SelectTrigger>
+              <SelectValue placeholder="학과를 선택하세요" />
+            </SelectTrigger>
+          </FormControl>
+          <SelectContent>
+            {departments.map((dept) => (
+              <SelectItem key={dept} value={dept}>
+                {dept}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+);
 
 export default function EditMyPage() {
   const router = useRouter();
@@ -75,12 +124,7 @@ export default function EditMyPage() {
             label="학번"
             disabled
           />
-          <TextField
-            control={form.control}
-            name="department"
-            label="학과"
-            disabled
-          />
+          <DepartmentSelect control={form.control} />
           <TextField control={form.control} name="name" label="이름" disabled />
           <TextField
             control={form.control}
