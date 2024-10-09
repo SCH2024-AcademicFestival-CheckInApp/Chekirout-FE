@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Stamp = ({ size = 48 }: { size?: number }) => (
     <svg width={size} height={size} viewBox="0 0 55 55" fill="none" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
@@ -21,7 +22,15 @@ const EmptyStamp = ({ size = 43 }: { size?: number }) => (
 );
 
 export default function HomePage() {
+    const router = useRouter();
     const [hoveredStamp, setHoveredStamp] = useState<number | null>(null);
+    
+    useEffect(() => {
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) {
+            router.push("/login");
+        }
+    }, [router]);
     
     const stamps = [
         { id: 1, completed: true, info: "전문가 특강" },
