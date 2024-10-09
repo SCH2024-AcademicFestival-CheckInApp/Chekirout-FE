@@ -10,6 +10,7 @@ export default function UserRecordPage() {
 
     return (
         <main className="w-full min-h-screen flex flex-col p-6 pt-11">
+
             <div className="flex items-center py-4">
                 <div className="text-xl font-bold">🏷️ &nbsp; 참여 내역</div>
             </div>
