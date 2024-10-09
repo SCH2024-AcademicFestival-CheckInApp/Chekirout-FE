@@ -3,9 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import axios from "axios";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { TextField, PasswordField, SelectField } from "@/components/FormField";
@@ -21,7 +19,7 @@ const FormSchema = z
       message: "비밀번호는 최소 6자 이상이어야 합니다.",
     }),
     confirmPassword: z.string(),
-    userType: z.enum(["STUDENT", "ADMIN"]),
+    userType: z.enum(["일반", "관리자"]),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "비밀번호가 일치하지 않습니다.",
@@ -29,17 +27,14 @@ const FormSchema = z
   });
 
 const departments = [
-  { label: "컴퓨터소프트웨어공학과", value: "CSE" },
-  { label: "의료 IT공학과", value: "Medical_IT" },
-  { label: "정보보호학과", value: "InfoSec" },
-  { label: "사물인터넷학과", value: "IoT" },
-  { label: "메타버스게임학과", value: "Metaverse" },
+  "컴퓨터소프트웨어공학과",
+  "의료 IT공학과",
+  "정보보호학과",
+  "사물인터넷학과",
+  "메타버스게임학과",
 ];
 
 export default function SignupPage() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -48,37 +43,12 @@ export default function SignupPage() {
       name: "",
       password: "",
       confirmPassword: "",
-      userType: "STUDENT",
+      userType: "일반",
     },
   });
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
-    setIsLoading(true);
-    try {
-      const selectedDepartment = departments.find(
-        (dept) => dept.value === data.department
-      );
-      const response = await axios.post(
-        "http://ec2-15-165-241-189.ap-northeast-2.compute.amazonaws.com:8080/api/v1/signup",
-        {
-          username: data.studentId,
-          department: selectedDepartment ? selectedDepartment.value : "",
-          name: data.name,
-          password: data.password,
-          role: data.userType,
-        }
-      );
-
-      if (response.status === 200) {
-        console.log("회원가입이 완료되었습니다.");
-        router.push("/login");
-      }
-    } catch (error) {
-      console.error("회원가입 오류:", error);
-      console.log("회원가입 중 오류가 발생했습니다. 다시 시도해주세요.");
-    } finally {
-      setIsLoading(false);
-    }
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    console.log("회원가입 시도", data);
   }
 
   return (
@@ -128,18 +98,18 @@ export default function SignupPage() {
               <Button
                 type="button"
                 variant={
-                  form.watch("userType") === "STUDENT" ? "default" : "outline"
+                  form.watch("userType") === "일반" ? "default" : "outline"
                 }
-                onClick={() => form.setValue("userType", "STUDENT")}
+                onClick={() => form.setValue("userType", "일반")}
                 className="flex-1 bg-gray-200 text-black hover:bg-gray-300">
                 일반
               </Button>
               <Button
                 type="button"
                 variant={
-                  form.watch("userType") === "ADMIN" ? "default" : "outline"
+                  form.watch("userType") === "관리자" ? "default" : "outline"
                 }
-                onClick={() => form.setValue("userType", "ADMIN")}
+                onClick={() => form.setValue("userType", "관리자")}
                 className="flex-1 bg-gray-200 text-black hover:bg-gray-300">
                 관리자
               </Button>
@@ -147,9 +117,8 @@ export default function SignupPage() {
           </div>
           <Button
             type="submit"
-            className="w-[328px] h-11 bg-[#235698] text-white font-semibold rounded-lg"
-            disabled={isLoading}>
-            {isLoading ? "처리 중..." : "회원가입"}
+            className="w-[328px] h-11 bg-[#235698] text-white font-semibold rounded-lg">
+            회원가입
           </Button>
         </form>
       </Form>
