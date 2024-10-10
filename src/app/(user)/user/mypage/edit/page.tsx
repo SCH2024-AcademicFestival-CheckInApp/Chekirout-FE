@@ -29,7 +29,7 @@ export default function EditMyPage() {
       name: userInfo?.name || "",
       email: userInfo?.email || "",
       phoneNumber: userInfo?.phoneNumber || "",
-      password: "",
+      currentPassword: "",
       newPassword: "",
       confirmPassword: "",
       devices: [""],
@@ -47,7 +47,7 @@ export default function EditMyPage() {
         name: userInfo.name,
         email: userInfo.email,
         phoneNumber: userInfo.phoneNumber,
-        password: "",
+        currentPassword: "",
         newPassword: "",
         confirmPassword: "",
         devices: [""],
@@ -103,7 +103,7 @@ export default function EditMyPage() {
           />
           <PasswordField
             control={form.control}
-            name="password"
+            name="currentPassword"
             label="현재 비밀번호"
             placeholder="현재 비밀번호"
           />
@@ -124,6 +124,13 @@ export default function EditMyPage() {
 
           <Button type="submit" className="w-full">
             저장하기
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={() => router.push("/user/mypage")}>
+            취소
           </Button>
         </div>
       </form>

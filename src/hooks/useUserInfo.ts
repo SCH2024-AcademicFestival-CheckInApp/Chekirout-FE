@@ -8,6 +8,7 @@ export interface UserInfo {
   username: string;
   email: string;
   phoneNumber: string;
+  password: string;
 }
 
 export function useUserInfo() {
