@@ -2,59 +2,38 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import axios from "axios";
-
-interface UserInfo {
-  name: string;   
-  department: string;   
-  studentId: string;  
-}
+import { useUserInfo } from "@/hooks/useUserInfo";
+import { departments } from "@/constants/constants";
 
 export default function MyPage() {
+  const { userInfo, isLoading } = useUserInfo();
   const router = useRouter();
-  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken) {
-      router.push("/login");
-      return;
-    }
+  if (isLoading) {
+    return <div>로딩 중...</div>;
+  }
 
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/profile`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        setUserInfo(response.data);
-      } catch (error) {
-        console.error("사용자 정보 조회 실패:", error);
-        router.push("/login");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchUserInfo();
-  }, [router]);
-  
+  const departmentName =
+    departments.find((dept) => dept.value === userInfo?.department)?.label ||
+    userInfo?.department;
+
+  const handleLogout = () => {
+    // 로컬 스토리지에서 토큰 제거
+    localStorage.removeItem("accessToken");
+    router.push("/");
+  };
+
   return (
     <main className="relative flex flex-col items-center">
       <div className="relative">
         <Image src="/assets/Card.png" alt="카드" width={332} height={480} />
         <div className="absolute top-4 right-4 text-right text-white">
           <p className="font-bold text-2xl">{userInfo?.name}</p>
-          <p className="text-base">{userInfo?.department}</p>
-          <p className="text-base">{userInfo?.studentId}</p>
+          <p className="text-base">{departmentName}</p>
+          <p className="text-base">{userInfo?.username}</p>
         </div>
       </div>
       <Link href="/user/mypage/edit" passHref>
@@ -63,6 +42,18 @@ export default function MyPage() {
           수정하기
         </Button>
       </Link>
+
+      <div className="mt-8 flex gap-4">
+        <Link href="/admin" className="text-gray-500 hover:underline">
+          관리자 페이지
+        </Link>
+        <div className="text-gray-500"> | </div>
+        <button
+          onClick={handleLogout}
+          className="text-gray-500 hover:underline">
+          로그아웃
+        </button>
+      </div>
     </main>
   );
 }

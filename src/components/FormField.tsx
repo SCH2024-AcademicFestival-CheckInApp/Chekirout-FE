@@ -21,6 +21,7 @@ interface InputFieldProps {
   label: string;
   type?: string;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 export const InputField = ({
@@ -28,6 +29,7 @@ export const InputField = ({
   name,
   label,
   type = "text",
+  disabled,
   ...props
 }: InputFieldProps) => (
   <FormField
@@ -37,7 +39,13 @@ export const InputField = ({
       <FormItem>
         <FormLabel>{label}</FormLabel>
         <FormControl>
-          <Input {...field} type={type} className="w-full" {...props} />
+          <Input
+            {...field}
+            type={type}
+            className="w-full"
+            {...props}
+            disabled={disabled}
+          />
         </FormControl>
         <FormMessage />
       </FormItem>
@@ -57,6 +65,7 @@ interface SelectFieldProps {
   control: Control<any>;
   options: { value: string; label: string }[];
   placeholder?: string;
+  disabled?: boolean;
 }
 
 export const SelectField: React.FC<SelectFieldProps> = ({
@@ -65,6 +74,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
   control,
   options,
   placeholder,
+  disabled,
 }) => {
   return (
     <FormField
@@ -73,7 +83,10 @@ export const SelectField: React.FC<SelectFieldProps> = ({
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select
+            onValueChange={field.onChange}
+            defaultValue={field.value}
+            disabled={disabled}>
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder={placeholder} />
