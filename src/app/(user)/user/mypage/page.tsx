@@ -4,48 +4,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import axios from "axios";
-
-interface UserInfo {
-  name: string;
-  department: string;
-  username: string;
-}
+import { useUserInfo } from "@/hooks/useUserInfo";
+import { departments } from "@/constants/constants";
 
 export default function MyPage() {
-  const router = useRouter();
-  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { userInfo, isLoading } = useUserInfo();
 
-  useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken) {
-      router.push("/login");
-      return;
-    }
+  if (isLoading) {
+    return <div>로딩 중...</div>;
+  }
 
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/profile`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        setUserInfo(response.data);
-      } catch (error) {
-        console.error("사용자 정보 조회 실패:", error);
-        router.push("/login");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchUserInfo();
-  }, [router]);
+  const departmentName =
+    departments.find((dept) => dept.value === userInfo?.department)?.label ||
+    userInfo?.department;
 
   return (
     <main className="relative flex flex-col items-center">
@@ -53,7 +24,7 @@ export default function MyPage() {
         <Image src="/assets/Card.png" alt="카드" width={332} height={480} />
         <div className="absolute top-4 right-4 text-right text-white">
           <p className="font-bold text-2xl">{userInfo?.name}</p>
-          <p className="text-base">{userInfo?.department}</p>
+          <p className="text-base">{departmentName}</p>
           <p className="text-base">{userInfo?.username}</p>
         </div>
       </div>
