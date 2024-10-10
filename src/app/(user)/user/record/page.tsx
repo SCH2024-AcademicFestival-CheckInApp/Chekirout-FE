@@ -1,20 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-
-interface ParticipationRecord {
-  categoryName: string;
-  programName: string;
-  participationTime: string;
-  latitude: number;
-  longitude: number;
-}
-
-interface ApiResponse {
-  studentName: string;
-  studentId: string;
-  participationRecords: ParticipationRecord[];
-}
+import { ApiResponse, ParticipationRecord } from '@/types/participationRecord';
 
 export default function UserRecordPage() {
     const [records, setRecords] = useState<ParticipationRecord[]>([]);
