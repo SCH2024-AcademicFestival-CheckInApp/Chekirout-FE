@@ -10,35 +10,17 @@ import { useToast } from "@/hooks/use-toast";
 import { TextField, PasswordField, SelectField } from "@/components/FormField";
 import { Device } from "@/components/Device";
 import { departments } from "@/constants/constants";
-const formSchema = z
-  .object({
-    username: z.string(),
-    department: z.string(),
-    name: z.string(),
-    email: z.string().email({ message: "유효한 이메일 주소를 입력해주세요." }),
-    phoneNumber: z
-      .string()
-      .min(10, { message: "올바른 전화번호를 입력해주세요." }),
-    password: z.string().min(6, { message: "현재 비밀번호를 입력해주세요." }),
-    newPassword: z
-      .string()
-      .min(6, { message: "새 비밀번호는 최소 6자 이상이어야 합니다." }),
-    confirmPassword: z.string(),
-    devices: z
-      .array(z.string())
-      .max(2, "최대 2개의 디바이스만 등록할 수 있습니다."),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "새 비밀번호가 일치하지 않습니다.",
-    path: ["confirmPassword"],
-  });
+import {
+  EditProfileSchema,
+  EditProfileFormData,
+} from "@/schemas/editProfileSchema";
 
 export default function EditMyPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<EditProfileFormData>({
+    resolver: zodResolver(EditProfileSchema),
     defaultValues: {
       username: "20204023",
       department: departments[0].value,
@@ -52,7 +34,7 @@ export default function EditMyPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: EditProfileFormData) {
     console.log(values);
     toast({
       title: "정보가 수정되었습니다.",
