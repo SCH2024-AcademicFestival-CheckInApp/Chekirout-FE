@@ -2,8 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,53 +13,27 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import axios from "axios";
-
-const FormSchema = z.object({
-  username: z.string().min(8, {
-    message: "학번 8자리를 입력해주세요.",
-  }),
-  password: z.string().min(6, {
-    message: "비밀번호는 최소 8자 이상이어야 합니다.",
-  }),
-});
+import { useEffect } from "react";
+import { setupAxiosInterceptors } from "@/lib/axiosInterceptor";
+import { LoginFormSchema, LoginFormData } from "@/schemas/loginSchema";
+import { useLogin } from "@/hooks/useLogin";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const { handleLogin, isLoading } = useLogin();
+
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(LoginFormSchema),
     defaultValues: {
       username: "",
       password: "",
     },
   });
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
-    setIsLoading(true);
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/login`,
-        {
-          username: data.username,
-          password: data.password,
-        }
-      );
+  useEffect(() => {
+    setupAxiosInterceptors(router);
+  }, [router]);
 
-      if (response.status === 200) {
-        console.log("로그인 성공");
-        localStorage.setItem("accessToken", response.data.accessToken); 
-        localStorage.setItem("refreshToken", response.data.refreshToken);
-         router.push("/home"); 
-      }
-    } catch (error) {
-      console.error("로그인 오류:", error);
-      console.log("로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
-    } finally {
-      setIsLoading(false);
-    }
-  }
   return (
     <main className="w-[480px] h-screen flex flex-col items-center bg-white">
       <div className="text-center pt-[200px] mb-20">
@@ -70,7 +42,7 @@ export default function LoginPage() {
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(handleLogin)}
           className="w-[328px] space-y-6">
           <FormField
             control={form.control}
