@@ -51,9 +51,46 @@ export default function LoginPage() {
 
       if (response.status === 200) {
         console.log("로그인 성공");
-        localStorage.setItem("accessToken", response.data.accessToken); 
+        localStorage.setItem("accessToken", response.data.accessToken);
         localStorage.setItem("refreshToken", response.data.refreshToken);
-         router.push("/home"); 
+
+        // 인터셉터 설정
+        axios.interceptors.response.use(
+          (response) => response,
+          async (error) => {
+            const originalRequest = error.config;
+            if (error.response.status === 401 && !originalRequest._retry) {
+              originalRequest._retry = true;
+              try {
+                const refreshToken = localStorage.getItem("refreshToken");
+                const refreshResponse = await axios.post(
+                  `${process.env.NEXT_PUBLIC_API_URL}/api/v1/refresh-token`,
+                  { refreshToken: refreshToken }
+                );
+                
+                
+                const newAccessToken = refreshResponse.data.accessToken;    // 응답에서 새 액세스 토큰 추출 
+                
+                if (newAccessToken) {
+                  localStorage.setItem("accessToken", newAccessToken);
+                  axios.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
+                  return axios(originalRequest);
+                } else {
+                  throw new Error("New access token not received");
+                }
+              } catch (refreshError) {
+                console.error("토큰 갱신 실패:", refreshError);
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("refreshToken");
+                router.push("/login");
+                return Promise.reject(refreshError);
+              }
+            }
+            return Promise.reject(error);
+          }
+        );
+
+        router.push("/home");
       }
     } catch (error) {
       console.error("로그인 오류:", error);
