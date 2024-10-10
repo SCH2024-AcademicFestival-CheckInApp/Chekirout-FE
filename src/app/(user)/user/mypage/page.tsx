@@ -9,9 +9,9 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 
 interface UserInfo {
-  name: string;   
-  department: string;   
-  studentId: string;  
+  name: string;
+  department: string;
+  username: string;
 }
 
 export default function MyPage() {
@@ -46,7 +46,7 @@ export default function MyPage() {
     };
     fetchUserInfo();
   }, [router]);
-  
+
   return (
     <main className="relative flex flex-col items-center">
       <div className="relative">
@@ -54,7 +54,7 @@ export default function MyPage() {
         <div className="absolute top-4 right-4 text-right text-white">
           <p className="font-bold text-2xl">{userInfo?.name}</p>
           <p className="text-base">{userInfo?.department}</p>
-          <p className="text-base">{userInfo?.studentId}</p>
+          <p className="text-base">{userInfo?.username}</p>
         </div>
       </div>
       <Link href="/user/mypage/edit" passHref>
