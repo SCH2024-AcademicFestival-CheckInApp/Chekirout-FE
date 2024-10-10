@@ -2,6 +2,17 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { Badge } from "@/components/ui/badge"
 
 const Stamp = ({ size = 48 }: { size?: number }) => (
     <svg width={size} height={size} viewBox="0 0 55 55" fill="none" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
@@ -49,14 +60,14 @@ export default function UserPage() {
     ];
 
     return (
-        <main className="w-full min-h-screen flex flex-col p-6">
-            <div className="mb-4 flex items-center">
+        <main className="w-full min-h-screen flex flex-col p-6 mt-12">
+            <div className="m-4 flex items-center">
                 <span className="text-md mr-2">🕹️</span>
                 <h2 className="text-lg font-bold">스탬프</h2>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm mb-6">
-                <div className="p-4">
+            <Card className="mb-10 border-0 shadow-none">
+                <CardContent className="p-4">
                     <div className="bg-blue-50 rounded-t-lg p-4 relative">
                         <div className="flex justify-between items-center">
                             {stamps.map((stamp) => (
@@ -70,9 +81,18 @@ export default function UserPage() {
                             >
                                 {stamp.completed ? <Stamp /> : <EmptyStamp />}
                                     {stamp.completed && hoveredStamp === stamp.id && (
-                                        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded-full text-[10px] text-gray-600 whitespace-nowrap">
-                                            {stamp.info}
-                                        </div>
+                                        <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded-full text-[10px] text-gray-600 whitespace-nowrap">
+                                                        {stamp.info}
+                                                    </div>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>{stamp.info}</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
                                     )}
                             </div>
                             ))}
@@ -82,25 +102,27 @@ export default function UserPage() {
                     <div className="text-center font-bold text-xl mt-8">
                         🎉 &nbsp; 현재 <span className="text-blue-900">62</span>명이 참여중이에요!
                     </div>
-                </div>
-            </div>
+                </CardContent>
+            </Card>
 
-            <div className="my-4 flex items-center">
+            <div className="m-4 flex items-center">
                 <span className="text-sm mr-2">🏆</span>
                 <h2 className="text-lg font-bold">학과 랭킹</h2>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-6">
-                {departments.map((dept, index) => (
-                    <div key={dept.id} className="flex justify-between items-center p-2">
-                        <div className="flex items-center py-2">
-                            <span className="text-sm mr-4 text-blue-800 w-4">{index + 1}</span>
-                            <div className='text-sm text-gray-600'>{dept.name}</div>
+            <Card className="bg-gray-50 border-0 m-4">
+                <CardContent className="px-6 py-4">
+                    {departments.map((dept, index) => (
+                        <div key={dept.id} className="flex justify-between items-center p-2">
+                            <div className="flex items-center py-2">
+                                <div className="mr-6 text-sm text-blue-800">{index + 1}</div>
+                                <div className='text-sm text-gray-600'>{dept.name}</div>
+                            </div>
+                            <div className="text-sm text-gray-600">{dept.participants}명</div>
                         </div>
-                        <div className="text-sm text-gray-600">{dept.participants}명</div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </CardContent>
+            </Card>
         </main>
     );
 }
