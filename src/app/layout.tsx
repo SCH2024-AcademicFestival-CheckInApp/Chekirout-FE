@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "../styles/globals.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
+import ReactQueryProvider from "@/providers/ReactQueryProvider";
 
 export const metadata: Metadata = {
   title: "CHEKIROUT",
@@ -38,14 +37,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [queryClient] = useState(() => new QueryClient())
-  
   return (
     <html lang="en">
       <body>
-        <QueryClientProvider client={queryClient}>
+        <ReactQueryProvider>
           {children}
-        </QueryClientProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );
