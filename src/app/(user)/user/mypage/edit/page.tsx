@@ -1,37 +1,63 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { TextField, PasswordField, SelectField } from "@/components/FormField";
+import { TextField, PasswordField } from "@/components/FormField";
 import { Device } from "@/components/Device";
 import { departments } from "@/constants/constants";
 import {
   EditProfileSchema,
   EditProfileFormData,
 } from "@/schemas/editProfileSchema";
+import { useUserInfo } from "@/hooks/useUserInfo";
 
 export default function EditMyPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { userInfo, isLoading } = useUserInfo();
 
   const form = useForm<EditProfileFormData>({
     resolver: zodResolver(EditProfileSchema),
     defaultValues: {
-      username: "20204023",
-      department: departments[0].value,
-      name: "황다경",
-      email: "",
-      phoneNumber: "",
+      username: userInfo?.username || "",
+      department: userInfo?.department || "",
+      name: userInfo?.name || "",
+      email: userInfo?.email || "",
+      phoneNumber: userInfo?.phoneNumber || "",
       password: "",
       newPassword: "",
       confirmPassword: "",
       devices: [""],
     },
   });
+
+  useEffect(() => {
+    if (userInfo) {
+      const departmentName =
+        departments.find((dept) => dept.value === userInfo.department)?.label ||
+        userInfo.department;
+      form.reset({
+        username: userInfo.username,
+        department: departmentName,
+        name: userInfo.name,
+        email: userInfo.email,
+        phoneNumber: userInfo.phoneNumber,
+        password: "",
+        newPassword: "",
+        confirmPassword: "",
+        devices: [""],
+      });
+    }
+  }, [userInfo, form]);
+
+  if (isLoading) {
+    return <div>로딩 중...</div>;
+  }
 
   function onSubmit(values: EditProfileFormData) {
     console.log(values);
@@ -56,12 +82,10 @@ export default function EditMyPage() {
             label="학번"
             disabled
           />
-          <SelectField
+          <TextField
             control={form.control}
             name="department"
             label="학과"
-            options={departments}
-            placeholder="학과를 선택하세요"
             disabled
           />
           <TextField control={form.control} name="name" label="이름" disabled />
