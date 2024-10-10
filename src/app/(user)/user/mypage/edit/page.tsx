@@ -5,28 +5,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Form } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { TextField, PasswordField } from "@/components/FormField";
+import { TextField, PasswordField, SelectField } from "@/components/FormField";
 import { Device } from "@/components/Device";
-
+import { departments } from "@/constants/constants";
 const formSchema = z
   .object({
-    studentId: z.string(),
+    username: z.string(),
     department: z.string(),
     name: z.string(),
     email: z.string().email({ message: "유효한 이메일 주소를 입력해주세요." }),
@@ -47,41 +33,6 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 
-const departments = [
-  "컴퓨터소프트웨어공학과",
-  "의료 IT공학과",
-  "정보보호학과",
-  "사물인터넷학과",
-  "메타버스게임학과",
-];
-
-const DepartmentSelect = ({ control }: { control: any }) => (
-  <FormField
-    control={control}
-    name="department"
-    render={({ field }) => (
-      <FormItem>
-        <FormLabel>학과</FormLabel>
-        <Select onValueChange={field.onChange} defaultValue={field.value}>
-          <FormControl>
-            <SelectTrigger>
-              <SelectValue placeholder="학과를 선택하세요" />
-            </SelectTrigger>
-          </FormControl>
-          <SelectContent>
-            {departments.map((dept) => (
-              <SelectItem key={dept} value={dept}>
-                {dept}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <FormMessage />
-      </FormItem>
-    )}
-  />
-);
-
 export default function EditMyPage() {
   const router = useRouter();
   const { toast } = useToast();
@@ -89,8 +40,8 @@ export default function EditMyPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      studentId: "20204023",
-      department: "컴퓨터소프트웨어공학과",
+      username: "20204023",
+      department: departments[0].value,
       name: "황다경",
       email: "",
       phoneNumber: "",
@@ -120,11 +71,18 @@ export default function EditMyPage() {
         <div className="w-[328px] space-y-4">
           <TextField
             control={form.control}
-            name="studentId"
+            name="username"
             label="학번"
             disabled
           />
-          <DepartmentSelect control={form.control} />
+          <SelectField
+            control={form.control}
+            name="department"
+            label="학과"
+            options={departments}
+            placeholder="학과를 선택하세요"
+            disabled
+          />
           <TextField control={form.control} name="name" label="이름" disabled />
           <TextField
             control={form.control}

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { TextField, PasswordField, SelectField } from "@/components/FormField";
+import { departments } from "@/constants/constants";
 
 const FormSchema = z
   .object({
@@ -27,15 +28,6 @@ const FormSchema = z
     message: "비밀번호가 일치하지 않습니다.",
     path: ["confirmPassword"],
   });
-
-const departments = [
-  { label: "컴퓨터소프트웨어공학과", value: "CSE" },
-  { label: "의료 IT공학과", value: "MEDIT" },
-  { label: "정보보호학과", value: "IP" },
-  { label: "사물인터넷학과", value: "IoT" },
-  { label: "메타버스게임학과", value: "METABUS" },
-  { label: "AI빅데이터공학과", value: "AI_BIGDATA" },
-];
 
 export default function SignupPage() {
   const router = useRouter();
