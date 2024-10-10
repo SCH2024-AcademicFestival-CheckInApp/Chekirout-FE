@@ -15,8 +15,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import { setupAxiosInterceptors } from "@/lib/axiosInterceptor";
+import { LoginFormData } from "@/schemas/loginSchema";
+import { login } from "@/api/auth";
 
 const FormSchema = z.object({
   username: z.string().min(8, {
@@ -38,58 +40,18 @@ export default function LoginPage() {
     },
   });
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
+  useEffect(() => {
+    setupAxiosInterceptors(router);
+  }, [router]);
+
+  async function onSubmit(data: LoginFormData) {
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/login`,
-        {
-          username: data.username,
-          password: data.password,
-        }
-      );
-
+      const response = await login(data.username, data.password);
       if (response.status === 200) {
         console.log("로그인 성공");
         localStorage.setItem("accessToken", response.data.accessToken);
         localStorage.setItem("refreshToken", response.data.refreshToken);
-
-        // 인터셉터 설정
-        axios.interceptors.response.use(
-          (response) => response,
-          async (error) => {
-            const originalRequest = error.config;
-            if (error.response.status === 401 && !originalRequest._retry) {
-              originalRequest._retry = true;
-              try {
-                const refreshToken = localStorage.getItem("refreshToken");
-                const refreshResponse = await axios.post(
-                  `${process.env.NEXT_PUBLIC_API_URL}/api/v1/refresh-token`,
-                  { refreshToken: refreshToken }
-                );
-                
-                
-                const newAccessToken = refreshResponse.data.accessToken;    // 응답에서 새 액세스 토큰 추출 
-                
-                if (newAccessToken) {
-                  localStorage.setItem("accessToken", newAccessToken);
-                  axios.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
-                  return axios(originalRequest);
-                } else {
-                  throw new Error("New access token not received");
-                }
-              } catch (refreshError) {
-                console.error("토큰 갱신 실패:", refreshError);
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("refreshToken");
-                router.push("/login");
-                return Promise.reject(refreshError);
-              }
-            }
-            return Promise.reject(error);
-          }
-        );
-
         router.push("/home");
       }
     } catch (error) {
@@ -99,6 +61,7 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   }
+
   return (
     <main className="w-[480px] h-screen flex flex-col items-center bg-white">
       <div className="text-center pt-[200px] mb-20">
