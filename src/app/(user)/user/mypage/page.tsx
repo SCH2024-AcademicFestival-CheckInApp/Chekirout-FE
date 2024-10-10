@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUserInfo } from "@/hooks/useUserInfo";
@@ -9,6 +10,7 @@ import { departments } from "@/constants/constants";
 
 export default function MyPage() {
   const { userInfo, isLoading } = useUserInfo();
+  const router = useRouter();
 
   if (isLoading) {
     return <div>로딩 중...</div>;
@@ -17,6 +19,12 @@ export default function MyPage() {
   const departmentName =
     departments.find((dept) => dept.value === userInfo?.department)?.label ||
     userInfo?.department;
+
+  const handleLogout = () => {
+    // 로컬 스토리지에서 토큰 제거
+    localStorage.removeItem("accessToken");
+    router.push("/");
+  };
 
   return (
     <main className="relative flex flex-col items-center">
@@ -34,6 +42,18 @@ export default function MyPage() {
           수정하기
         </Button>
       </Link>
+
+      <div className="mt-8 flex gap-4">
+        <Link href="/admin" className="text-gray-500 hover:underline">
+          관리자 페이지
+        </Link>
+        <div className="text-gray-500"> | </div>
+        <button
+          onClick={handleLogout}
+          className="text-gray-500 hover:underline">
+          로그아웃
+        </button>
+      </div>
     </main>
   );
 }
