@@ -15,7 +15,7 @@ export function useLogin() {
         console.log("로그인 성공");
         localStorage.setItem("accessToken", response.data.accessToken);
         localStorage.setItem("refreshToken", response.data.refreshToken);
-        router.push("/home");
+        router.push("/user");
       }
     } catch (error) {
       console.error("로그인 오류:", error);
