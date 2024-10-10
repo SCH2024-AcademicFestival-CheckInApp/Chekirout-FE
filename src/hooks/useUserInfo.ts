@@ -8,7 +8,7 @@ export interface UserInfo {
   username: string;
   email: string;
   phoneNumber: string;
-  password: string;
+  devices: string[];
 }
 
 export function useUserInfo() {
