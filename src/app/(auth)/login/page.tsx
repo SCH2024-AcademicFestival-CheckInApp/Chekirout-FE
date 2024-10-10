@@ -13,14 +13,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { setupAxiosInterceptors } from "@/lib/axiosInterceptor";
 import { LoginFormSchema, LoginFormData } from "@/schemas/loginSchema";
-import { login } from "@/api/auth";
+import { useLogin } from "@/hooks/useLogin";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const { handleLogin, isLoading } = useLogin();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(LoginFormSchema),
@@ -34,24 +34,6 @@ export default function LoginPage() {
     setupAxiosInterceptors(router);
   }, [router]);
 
-  async function onSubmit(data: LoginFormData) {
-    setIsLoading(true);
-    try {
-      const response = await login(data.username, data.password);
-      if (response.status === 200) {
-        console.log("로그인 성공");
-        localStorage.setItem("accessToken", response.data.accessToken);
-        localStorage.setItem("refreshToken", response.data.refreshToken);
-        router.push("/home");
-      }
-    } catch (error) {
-      console.error("로그인 오류:", error);
-      console.log("로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   return (
     <main className="w-[480px] h-screen flex flex-col items-center bg-white">
       <div className="text-center pt-[200px] mb-20">
@@ -60,7 +42,7 @@ export default function LoginPage() {
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(handleLogin)}
           className="w-[328px] space-y-6">
           <FormField
             control={form.control}
