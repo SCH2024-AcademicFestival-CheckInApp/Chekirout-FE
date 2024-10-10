@@ -2,8 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,23 +15,15 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { setupAxiosInterceptors } from "@/lib/axiosInterceptor";
-import { LoginFormData } from "@/schemas/loginSchema";
+import { LoginFormSchema, LoginFormData } from "@/schemas/loginSchema";
 import { login } from "@/api/auth";
-
-const FormSchema = z.object({
-  username: z.string().min(8, {
-    message: "학번 8자리를 입력해주세요.",
-  }),
-  password: z.string().min(6, {
-    message: "비밀번호는 최소 8자 이상이어야 합니다.",
-  }),
-});
 
 export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(LoginFormSchema),
     defaultValues: {
       username: "",
       password: "",
