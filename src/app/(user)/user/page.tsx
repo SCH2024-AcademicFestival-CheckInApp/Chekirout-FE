@@ -38,7 +38,14 @@ export default function UserPage() {
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#235698]"></div>
         </div>
     );
-    if (error) return <div>에러가 발생했습니다: {error.message}</div>;
+    if (error) return (
+        <div className="flex justify-center items-center h-screen">
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong className="font-bold">오류 발생!</strong>
+                <span className="block sm:inline"> {error.message}</span>
+            </div>
+        </div>
+    );
 
     const totalStamps = 5; 
     const completedStamps = stampCard?.stampCount ?? 0;
