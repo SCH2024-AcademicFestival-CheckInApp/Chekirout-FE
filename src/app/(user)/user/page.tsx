@@ -88,8 +88,8 @@ export default function UserPage() {
                                             <TooltipProvider>
                                                 <Tooltip>
                                                     <TooltipTrigger asChild>
-                                                        <div className="absolute flex flex-col items-center -bottom-6 left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded-full text-[10px] text-gray-600 whitespace-nowrap border border-[#235698]">
-                                                            {/* <div>{stamp.programName}</div> */}
+                                                        <div className="absolute flex flex-col items-center -bottom-10 left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded-full text-[10px] text-gray-600 whitespace-nowrap border border-[#235698]">
+                                                            <div>{stamp.programName}</div>
                                                             <div>{new Date(stamp.timestamp).toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false, weekday: 'short' }).replace(/\s/g, ' ').replace(',', '')}</div>
                                                         </div>
                                                     </TooltipTrigger>
