@@ -1,9 +1,22 @@
 "use client";
 
 import { useParticipationRecords } from '@/hooks/useParticipationRecords';
+import { setupAxiosInterceptors } from '@/lib/axiosInterceptor';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function UserRecordPage() {
+    const router = useRouter();
     const { data, isLoading, error } = useParticipationRecords();
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) {
+            localStorage.removeItem("accessToken");
+            router.push("/login");
+        } 
+        setupAxiosInterceptors(router);
+    }, [router]);
 
     return (
         <main className="w-full min-h-screen flex flex-col p-6 mt-12">
