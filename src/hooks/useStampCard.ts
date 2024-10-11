@@ -6,4 +6,4 @@ export const useStampCard = (): UseQueryResult<StampCardResponse | null, Error> 
     queryKey: ['stampCard'],
     queryFn: fetchStampCard,
   });
-};
+};  

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/tooltip"
 import { useStampCard } from '@/hooks/useStampCard';
 import { EmptyStamp, Stamp } from "@/components/Stamp";
+import { setupAxiosInterceptors } from "@/lib/axiosInterceptor";
 
 export default function UserPage() {
     const departments = [
@@ -27,12 +28,14 @@ export default function UserPage() {
     const { data: stampCard, isLoading, error } = useStampCard();
     
     useEffect(() => {
-        const accessToken = localStorage.getItem("accessToken");
-        if (!accessToken) {
-            router.push("/login");
-        }
-    }, [router]);
-
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+          localStorage.removeItem("accessToken");
+          router.push("/login");
+      } 
+      setupAxiosInterceptors(router);
+  }, [router]);
+  
     if (isLoading) return (
         <div className="flex justify-center items-center h-screen">
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#235698]"></div>
