@@ -13,8 +13,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 
+const departmentMapping: { [key: string]: string } = {
+  CSE: "컴퓨터소프트웨어공학과",
+  MEDIT: "의료IT공학과",
+  IOT: "사물인터넷학과",
+  IP: "정보보호학과",
+  AI_BIGDATA: "AI빅데이터공학과",
+  METABUS: "메타버스게임학과",
+};
+
 export type User = {
-  id: string;
+  username: string;
   department: string;
   name: string;
   role: "STUDENT" | "ADMIN";
@@ -47,7 +56,7 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "id",
+    accessorKey: "username",
     header: ({ column }) => {
       return (
         <Button
@@ -66,6 +75,10 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "department",
     header: "학과",
+    cell: ({ row }) => {
+      const department = row.getValue("department") as string;
+      return departmentMapping[department] || department;
+    },
   },
   {
     accessorKey: "role",
@@ -102,7 +115,7 @@ export const columns: ColumnDef<User>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>작업</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(user.id)}>
+              onClick={() => navigator.clipboard.writeText(user.username)}>
               학번 복사
             </DropdownMenuItem>
             <DropdownMenuSeparator />
