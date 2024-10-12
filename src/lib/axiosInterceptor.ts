@@ -6,11 +6,17 @@ export const setupAxiosInterceptors = (router: any) => {
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
+      
+      // 401 Unauthorized 에러 처리
       if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         try {
           const storedRefreshToken = localStorage.getItem("refreshToken");
-          const refreshResponse = await refreshToken(storedRefreshToken!);
+          if (!storedRefreshToken) {
+            throw new Error("Refresh token not found");
+          }
+          
+          const refreshResponse = await refreshToken(storedRefreshToken);
           const newAccessToken = refreshResponse.data.accessToken;
           
           if (newAccessToken) {
@@ -28,6 +34,14 @@ export const setupAxiosInterceptors = (router: any) => {
           return Promise.reject(refreshError);
         }
       }
+      
+      // 403 Forbidden 에러 처리 (권한 없음)
+      if (error.response.status === 403) {
+        console.error("접근 권한이 없습니다.");
+        router.push("/login");
+        return Promise.reject(error);
+      }
+      
       return Promise.reject(error);
     }
   );
