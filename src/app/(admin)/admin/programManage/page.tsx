@@ -50,7 +50,7 @@ async function getData(): Promise<Program[]> {
   }
 }
 
-export default function UserManagePage() {
+export default function ProgramManagePage() {
   const [data, setData] = useState<Program[]>([]);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
