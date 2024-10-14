@@ -9,9 +9,11 @@ import StatusModal from './StatusModal';
 const FloatingQRButton: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleScan = async (result: string) => {
     try {
+      setIsLoading(true);
       const programId = handleQRScan(result);
       
       setStatus('위치 정보 획득 중...');
@@ -24,6 +26,8 @@ const FloatingQRButton: React.FC = () => {
       setStatus(message);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : '오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -35,9 +39,15 @@ const FloatingQRButton: React.FC = () => {
         onClose={() => {
           setIsModalOpen(false);
           setStatus(null);
+          setIsLoading(false);
         }}
         onScan={handleScan}
       />
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white"></div>
+        </div>
+      )}
       <StatusModal status={status} onClose={() => setStatus(null)} />
     </>
   );
