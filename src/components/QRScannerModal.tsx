@@ -51,7 +51,7 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({ isOpen, onClose, onScan
   };
 
   const onScanFailure = (error: string) => {
-    console.error('QRScannerModal: QR code scanning failed', error);
+    // console.error('QRScannerModal: QR code scanning failed', error);
   };
 
   if (!isOpen) return null;
