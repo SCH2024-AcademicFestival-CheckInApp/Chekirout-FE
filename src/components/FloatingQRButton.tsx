@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { QrCode } from 'lucide-react';
 import QRScannerModal from './QRScannerModal';
+import { getCurrentPosition } from '@/lib/geolocation';
 
 const FloatingQRButton: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,12 +51,6 @@ const FloatingQRButton: React.FC = () => {
       // console.error('오류 발생:', error); 
       setStatus(error instanceof Error ? error.message : '오류가 발생했습니다.');
     }
-  };
-
-  const getCurrentPosition = (): Promise<GeolocationPosition> => {
-    return new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject);
-    });
   };
 
   return (
