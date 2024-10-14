@@ -13,8 +13,7 @@ const StatusModal: React.FC<StatusModalProps> = ({ status, onClose, isLoading = 
     if (status) {
       const timer = setTimeout(() => {
         setShowContent(true);
-      }, 500); // 0.5초 후에 내용을 표시합니다.
-
+      }, 500); 
       return () => clearTimeout(timer);
     }
   }, [status]);
