@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { User, columns } from "./columns";
 import axios from "axios";
@@ -85,6 +85,8 @@ export default function UserManagePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState<string>("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
 
   const fetchData = useCallback(
@@ -112,22 +114,41 @@ export default function UserManagePage() {
   );
 
   useEffect(() => {
-    fetchData(searchTerm);
-  }, [fetchData, searchTerm, selectedDepartment]);
+    fetchData(debouncedSearchTerm);
+  }, [fetchData, debouncedSearchTerm, selectedDepartment]);
+
+  useEffect(() => {
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+    debounceTimer.current = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 1000);
+
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, [searchTerm]);
 
   const handleSearch = () => {
-    fetchData(searchTerm);
+    setDebouncedSearchTerm(searchTerm);
   };
 
   const handleReset = () => {
     setSearchTerm("");
+    setDebouncedSearchTerm("");
     setSelectedDepartment("");
-    setPage(0); // 페이지를 첫 페이지로 리셋
-    fetchData(""); // 빈 문자열로 검색하여 전체 리스트를 가져옴
+    setPage(0);
   };
 
   const handleRoleChange = async (role: string) => {
     for (const username of selectedUsers) {
+      if (!username) {
+        console.log("빈 문자열");
+        continue;
+      }
       try {
         const accessToken = localStorage.getItem("accessToken");
         await axios.put(
@@ -139,16 +160,22 @@ export default function UserManagePage() {
             },
           }
         );
+        console.log(`사용자 ${username}의 권한이 ${role}로 변경되었습니다.`);
       } catch (error) {
         console.error(`사용자 ${username}의 권한 변경 중 오류 발생:`, error);
       }
     }
     fetchData();
     setSelectedUsers([]);
+    alert("선택된 사용자들의 권한이 변경되었습니다.");
   };
 
   const handleBlock = async () => {
     for (const username of selectedUsers) {
+      if (!username) {
+        console.log("빈 문자열");
+        continue;
+      }
       try {
         const accessToken = localStorage.getItem("accessToken");
         await axios.put(
@@ -160,22 +187,31 @@ export default function UserManagePage() {
             },
           }
         );
+        console.log(`사용자 ${username}가 차단되었습니다.`);
       } catch (error) {
         console.error(`사용자 ${username} 차단 중 오류 발생:`, error);
       }
     }
     fetchData();
     setSelectedUsers([]);
+    alert("선택된 사용자들이 차단되었습니다.");
   };
 
   const onRowSelectionModelChange = useCallback(
-    (selectedRows: any[]) => {
-      setSelectedUsers(
-        selectedRows.map((rowId) => {
-          const row = data.find((user) => user.id === rowId);
-          return row ? row.username : "";
+    (selectedRows: any) => {
+      console.log("Selected rows:", selectedRows);
+      const selectedUsernames = selectedRows
+        .map((rowIndex: number) => {
+          if (data[rowIndex]) {
+            console.log("Selected user:", data[rowIndex].username);
+            return data[rowIndex].username;
+          }
+          console.log("User not found for index:", rowIndex);
+          return "";
         })
-      );
+        .filter((username: string) => username !== ""); // 빈 문자열 제거
+
+      setSelectedUsers(selectedUsernames);
     },
     [data]
   );
@@ -188,7 +224,7 @@ export default function UserManagePage() {
     <div className="container mx-auto py-10">
       <DataTable
         columns={columns}
-        data={data} // 데이터가 비��있으면 DataTable 컴포넌트가 자동으로 "No results" 메시지를 표시합니다.
+        data={data}
         pagination={{
           pageIndex: page,
           pageSize: pageSize,
@@ -209,7 +245,7 @@ export default function UserManagePage() {
               value={selectedDepartment}
               onChange={(e) => {
                 setSelectedDepartment(e.target.value);
-                setPage(0); // 학과 변경 시 첫 페이지로 리셋
+                setPage(0);
               }}
               className="border border-gray-300 rounded-md p-2">
               <option value="">모든 학과</option>
@@ -219,27 +255,28 @@ export default function UserManagePage() {
                 </option>
               ))}
             </select>
+
             <Button onClick={handleSearch}>검색</Button>
             <Button onClick={handleReset} variant="outline">
               <RotateCcw className="h-4 w-4" />
             </Button>
+            {selectedUsers.length > 0 && (
+              <div className="flex items-center space-x-2 pl-6">
+                <Button onClick={() => handleRoleChange("MASTER")}>
+                  Master
+                </Button>
+                <Button onClick={() => handleRoleChange("ADMIN")}>Admin</Button>
+                <Button onClick={() => handleRoleChange("STUDENT")}>
+                  Student
+                </Button>
+                <Button className="bg-red-600 text-white" onClick={handleBlock}>
+                  차단
+                </Button>
+              </div>
+            )}
           </div>
         }
       />
-      {selectedUsers.length > 0 && (
-        <div className="flex items-center space-x-2 mt-4">
-          <Button onClick={() => handleRoleChange("MASTER")}>
-            Master 권한 부여
-          </Button>
-          <Button onClick={() => handleRoleChange("ADMIN")}>
-            Admin 권한 부여
-          </Button>
-          <Button onClick={() => handleRoleChange("STUDENT")}>
-            Student 권한 부여
-          </Button>
-          <Button onClick={handleBlock}>차단</Button>
-        </div>
-      )}
     </div>
   );
 }

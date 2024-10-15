@@ -1,16 +1,8 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, ArrowUpDown } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import axios from "axios";
 
@@ -32,44 +24,6 @@ export type User = {
   isNotificationEnabled: boolean;
   phoneNumber: string;
   email: string;
-};
-
-const changeUserRole = async (username: string, newRole: string) => {
-  try {
-    const accessToken = localStorage.getItem("accessToken");
-    await axios.put(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/admin/users/${username}/role`,
-      { role: newRole },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    alert("권한이 변경되었습니다.");
-  } catch (error) {
-    console.error("권한 변경 중 오류 발생:", error);
-    alert("권한 변경에 실패했습니다.");
-  }
-};
-
-const blockUser = async (username: string) => {
-  try {
-    const accessToken = localStorage.getItem("accessToken");
-    await axios.put(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/admin/users/${username}/block`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    alert("사용자가 차단되었습니다.");
-  } catch (error) {
-    console.error("사용자 차단 중 오류 발생:", error);
-    alert("사용자 차단에 실패했습니다.");
-  }
 };
 
 export const columns: ColumnDef<User>[] = [
