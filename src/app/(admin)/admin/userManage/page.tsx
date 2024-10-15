@@ -40,7 +40,7 @@ async function getData(): Promise<User[]> {
 export default function UserManagePage() {
   const [data, setData] = useState<User[]>([]);
 
-  useState(() => {
+  useEffect(() => {
     getData().then(setData);
   }, []);
 
