@@ -11,6 +11,7 @@ import { Form } from "@/components/ui/form";
 import { TextField, PasswordField, SelectField } from "@/components/FormField";
 import { departments } from "@/constants/constants";
 import { SigninSchema, SigninFormData } from "@/schemas/signinSchema";
+import { getApiUrl } from "@/lib/getApiUrl";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -34,8 +35,9 @@ export default function SignupPage() {
       const selectedDepartment = departments.find(
         (dept) => dept.value === data.department
       );
+      const apiUrl = getApiUrl('/signup');
       const response = await axios.post(
-        "http://ec2-15-165-241-189.ap-northeast-2.compute.amazonaws.com:8080/api/v1/signup",
+        apiUrl,
         {
           username: data.username,
           department: selectedDepartment ? selectedDepartment.value : "",
@@ -44,7 +46,7 @@ export default function SignupPage() {
           role: "STUDENT",
         }
       );
-
+  
       if (response.status === 200) {
         console.log("회원가입이 완료되었습니다.");
         router.push("/login");
