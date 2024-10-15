@@ -7,6 +7,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { RotateCcw } from "lucide-react";
 
 interface ApiResponse {
   content: User[];
@@ -38,15 +39,28 @@ async function getData(
       },
     });
 
+    let content: User[];
+    if (searchTerm) {
+      // 검색 결과가 단일 사용자인 경우 배열로 변환
+      content = Array.isArray(response.data) ? response.data : [response.data];
+    } else {
+      content = response.data.content;
+    }
+
     // 응답 데이터를 변환하여 'id' 필드 추가
-    const transformedData = response.data.content.map((user) => ({
+    const transformedData = content.map((user) => ({
       ...user,
       id: user.username, // 'username'을 'id'로 사용
     }));
 
     return {
-      ...response.data,
       content: transformedData,
+      totalElements: searchTerm
+        ? transformedData.length
+        : response.data.totalElements,
+      totalPages: searchTerm ? 1 : response.data.totalPages,
+      size: searchTerm ? transformedData.length : response.data.size,
+      number: searchTerm ? 0 : response.data.number,
     };
   } catch (error) {
     console.error("사용자 데이터를 가져오는 중 오류 발생:", error);
@@ -65,10 +79,10 @@ export default function UserManagePage() {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const router = useRouter();
 
-  const fetchData = async () => {
+  const fetchData = async (search: string = "") => {
     setIsLoading(true);
     try {
-      const response = await getData(page, pageSize, searchTerm);
+      const response = await getData(page, pageSize, search);
       setData(response.content);
       setTotalPages(response.totalPages);
     } catch (err) {
@@ -84,6 +98,13 @@ export default function UserManagePage() {
   }, [page, pageSize, router]);
 
   const handleSearch = () => {
+    if (searchTerm.length === 8) {
+      fetchData(searchTerm);
+    }
+  };
+
+  const handleReset = () => {
+    setSearchTerm("");
     fetchData();
   };
 
@@ -113,7 +134,7 @@ export default function UserManagePage() {
       try {
         const accessToken = localStorage.getItem("accessToken");
         await axios.put(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/admin/users/${username}/block`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/admin/users/${username}/{}`,
           {},
           {
             headers: {
@@ -157,6 +178,9 @@ export default function UserManagePage() {
               className="max-w-sm"
             />
             <Button onClick={handleSearch}>검색</Button>
+            <Button onClick={handleReset} variant="outline">
+              <RotateCcw className="h-4 w-4" />
+            </Button>
           </div>
         }
       />
