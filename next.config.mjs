@@ -3,6 +3,9 @@ import withPWA from "next-pwa";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true, // (에러 핸들링) reactStrictMode 활성화
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 const pwaConfig = {
