@@ -107,6 +107,16 @@ export const columns: ColumnDef<User>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      const id = row.getValue("id") as string;
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => navigator.clipboard.writeText(id)}>
+          {id}
+        </Button>
+      );
+    },
   },
 
   {
@@ -157,45 +167,5 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "email",
     header: "이메일",
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const user = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">메뉴 열기</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>작업</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(user.username)}>
-              학번 복사
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => changeUserRole(user.username, "MASTER")}>
-              권한 설정: Master
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => changeUserRole(user.username, "ADMIN")}>
-              권한 설정: Admin
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => changeUserRole(user.username, "STUDENT")}>
-              권한 설정: Student
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => blockUser(user.username)}>
-              차단
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
   },
 ];
