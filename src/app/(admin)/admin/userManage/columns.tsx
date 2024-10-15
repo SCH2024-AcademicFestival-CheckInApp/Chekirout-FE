@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
+import axios from "axios";
 
 const departmentMapping: { [key: string]: string } = {
   CSE: "컴퓨터소프트웨어공학과",
@@ -23,13 +24,52 @@ const departmentMapping: { [key: string]: string } = {
 };
 
 export type User = {
+  id: string;
   username: string;
   department: string;
   name: string;
-  role: "STUDENT" | "ADMIN";
+  role: "STUDENT" | "ADMIN" | "MASTER";
   isNotificationEnabled: boolean;
   phoneNumber: string;
   email: string;
+};
+
+const changeUserRole = async (username: string, newRole: string) => {
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+    await axios.put(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/admin/users/${username}/role`,
+      { role: newRole },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    alert("권한이 변경되었습니다.");
+  } catch (error) {
+    console.error("권한 변경 중 오류 발생:", error);
+    alert("권한 변경에 실패했습니다.");
+  }
+};
+
+const blockUser = async (username: string) => {
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+    await axios.put(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/admin/users/${username}/block`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    alert("사용자가 차단되었습니다.");
+  } catch (error) {
+    console.error("사용자 차단 중 오류 발생:", error);
+    alert("사용자 차단에 실패했습니다.");
+  }
 };
 
 export const columns: ColumnDef<User>[] = [
@@ -56,7 +96,7 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "username",
+    accessorKey: "id",
     header: ({ column }) => {
       return (
         <Button
@@ -68,13 +108,23 @@ export const columns: ColumnDef<User>[] = [
       );
     },
   },
+
   {
     accessorKey: "name",
     header: "이름",
   },
   {
     accessorKey: "department",
-    header: "학과",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          학과
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => {
       const department = row.getValue("department") as string;
       return departmentMapping[department] || department;
@@ -119,8 +169,21 @@ export const columns: ColumnDef<User>[] = [
               학번 복사
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>정보 수정</DropdownMenuItem>
-            <DropdownMenuItem>차단</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => changeUserRole(user.username, "MASTER")}>
+              권한 설정: Master
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => changeUserRole(user.username, "ADMIN")}>
+              권한 설정: Admin
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => changeUserRole(user.username, "STUDENT")}>
+              권한 설정: Student
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => blockUser(user.username)}>
+              차단
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

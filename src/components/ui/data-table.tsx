@@ -44,12 +44,14 @@ interface DataTableProps<TData, TValue> {
     onPageChange: (page: number) => void;
     onPageSizeChange: (pageSize: number) => void;
   };
+  searchInput?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   pagination,
+  searchInput,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -110,14 +112,7 @@ export function DataTable<TData, TValue>({
       </div>
 
       <div className="flex items-center justify-between py-4">
-        <Input
-          placeholder="학번 검색"
-          value={(table.getColumn("id")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("id")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+        {searchInput}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">Columns</Button>
