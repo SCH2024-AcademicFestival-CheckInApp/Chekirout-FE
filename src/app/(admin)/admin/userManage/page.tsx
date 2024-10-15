@@ -123,7 +123,7 @@ export default function UserManagePage() {
     }
     debounceTimer.current = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-    }, 1000);
+    }, 500);
 
     return () => {
       if (debounceTimer.current) {
@@ -131,10 +131,6 @@ export default function UserManagePage() {
       }
     };
   }, [searchTerm]);
-
-  const handleSearch = () => {
-    setDebouncedSearchTerm(searchTerm);
-  };
 
   const handleReset = () => {
     setSearchTerm("");
@@ -256,12 +252,11 @@ export default function UserManagePage() {
               ))}
             </select>
 
-            <Button onClick={handleSearch}>검색</Button>
             <Button onClick={handleReset} variant="outline">
               <RotateCcw className="h-4 w-4" />
             </Button>
             {selectedUsers.length > 0 && (
-              <div className="flex items-center space-x-2 pl-6">
+              <div className="flex items-center space-x-2 pl-40 pr-2">
                 <Button onClick={() => handleRoleChange("MASTER")}>
                   Master
                 </Button>
