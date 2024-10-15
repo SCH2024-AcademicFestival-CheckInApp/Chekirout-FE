@@ -14,10 +14,10 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import axios from "axios";
 
-const departmentMapping: { [key: string]: string } = {
+export const departmentMapping: { [key: string]: string } = {
   CSE: "컴퓨터소프트웨어공학과",
   MEDIT: "의료IT공학과",
-  IOT: "사물인터넷학과",
+  IoT: "사물인터넷학과",
   IP: "정보보호학과",
   AI_BIGDATA: "AI빅데이터공학과",
   METABUS: "메타버스게임학과",

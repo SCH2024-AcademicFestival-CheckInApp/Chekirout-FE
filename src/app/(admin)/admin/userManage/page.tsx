@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { User, columns } from "./columns";
 import axios from "axios";
@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
+import { departmentMapping } from "./columns";
 
 interface ApiResponse {
   content: User[];
@@ -20,7 +21,8 @@ interface ApiResponse {
 async function getData(
   page: number,
   size: number,
-  searchTerm: string
+  searchTerm: string,
+  department: string
 ): Promise<ApiResponse> {
   try {
     let accessToken = localStorage.getItem("accessToken");
@@ -29,6 +31,9 @@ async function getData(
     }
 
     let url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/admin/users?page=${page}&size=${size}`;
+    if (department && department !== "") {
+      url += `&department=${department}`;
+    }
     if (searchTerm) {
       url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/admin/users/${searchTerm}`;
     }
@@ -42,7 +47,9 @@ async function getData(
     let content: User[];
     if (searchTerm) {
       // 검색 결과가 단일 사용자인 경우 배열로 변환
-      content = Array.isArray(response.data) ? response.data : [response.data];
+      content = (
+        Array.isArray(response.data) ? response.data : [response.data]
+      ) as User[];
     } else {
       content = response.data.content;
     }
@@ -77,35 +84,46 @@ export default function UserManagePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [selectedDepartment, setSelectedDepartment] = useState<string>("");
   const router = useRouter();
 
-  const fetchData = async (search: string = "") => {
-    setIsLoading(true);
-    try {
-      const response = await getData(page, pageSize, search);
-      setData(response.content);
-      setTotalPages(response.totalPages);
-    } catch (err) {
-      console.error("데이터 로딩 중 오류 발생:", err);
-      setError("데이터를 불러오는 데 실패했습니다. 다시 시도해 주세요.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const fetchData = useCallback(
+    async (search: string = "") => {
+      setIsLoading(true);
+      try {
+        const response = await getData(
+          page,
+          pageSize,
+          search,
+          selectedDepartment
+        );
+        setData(response.content);
+        setTotalPages(response.totalPages);
+        setError(null);
+      } catch (err) {
+        console.error("데이터 로딩 중 오류 발생:", err);
+        setData([]);
+        setTotalPages(0);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [page, pageSize, selectedDepartment]
+  );
 
   useEffect(() => {
-    fetchData();
-  }, [page, pageSize, router]);
+    fetchData(searchTerm);
+  }, [fetchData, searchTerm, selectedDepartment]);
 
   const handleSearch = () => {
-    if (searchTerm.length === 8) {
-      fetchData(searchTerm);
-    }
+    fetchData(searchTerm);
   };
 
   const handleReset = () => {
     setSearchTerm("");
-    fetchData();
+    setSelectedDepartment("");
+    setPage(0); // 페이지를 첫 페이지로 리셋
+    fetchData(""); // 빈 문자열로 검색하여 전체 리스트를 가져옴
   };
 
   const handleRoleChange = async (role: string) => {
@@ -150,6 +168,18 @@ export default function UserManagePage() {
     setSelectedUsers([]);
   };
 
+  const onRowSelectionModelChange = useCallback(
+    (selectedRows: any[]) => {
+      setSelectedUsers(
+        selectedRows.map((rowId) => {
+          const row = data.find((user) => user.id === rowId);
+          return row ? row.username : "";
+        })
+      );
+    },
+    [data]
+  );
+
   if (error) {
     return <div className="container mx-auto py-10 text-red-500">{error}</div>;
   }
@@ -158,7 +188,7 @@ export default function UserManagePage() {
     <div className="container mx-auto py-10">
       <DataTable
         columns={columns}
-        data={data}
+        data={data} // 데이터가 비��있으면 DataTable 컴포넌트가 자동으로 "No results" 메시지를 표시합니다.
         pagination={{
           pageIndex: page,
           pageSize: pageSize,
@@ -166,9 +196,7 @@ export default function UserManagePage() {
           onPageChange: setPage,
           onPageSizeChange: setPageSize,
         }}
-        onRowSelectionChange={(selectedRows) => {
-          setSelectedUsers(selectedRows.map((row) => row.original.username));
-        }}
+        onRowSelectionModelChange={onRowSelectionModelChange}
         searchInput={
           <div className="flex items-center space-x-2">
             <Input
@@ -177,6 +205,20 @@ export default function UserManagePage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-sm"
             />
+            <select
+              value={selectedDepartment}
+              onChange={(e) => {
+                setSelectedDepartment(e.target.value);
+                setPage(0); // 학과 변경 시 첫 페이지로 리셋
+              }}
+              className="border border-gray-300 rounded-md p-2">
+              <option value="">모든 학과</option>
+              {Object.entries(departmentMapping).map(([key, value]) => (
+                <option key={key} value={key}>
+                  {value}
+                </option>
+              ))}
+            </select>
             <Button onClick={handleSearch}>검색</Button>
             <Button onClick={handleReset} variant="outline">
               <RotateCcw className="h-4 w-4" />
