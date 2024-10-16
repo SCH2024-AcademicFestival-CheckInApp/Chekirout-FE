@@ -9,51 +9,26 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { TextField, PasswordField, SelectField } from "@/components/FormField";
-
-const FormSchema = z
-  .object({
-    studentId: z.string().length(8, {
-      message: "학번 8자리를 입력해주세요.",
-    }),
-    department: z.string().min(1, "학과를 선택해주세요"),
-    name: z.string().min(1, "이름을 입력해주세요"),
-    password: z.string().min(6, {
-      message: "비밀번호는 최소 6자 이상이어야 합니다.",
-    }),
-    confirmPassword: z.string(),
-    userType: z.enum(["STUDENT", "ADMIN"]),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "비밀번호가 일치하지 않습니다.",
-    path: ["confirmPassword"],
-  });
-
-const departments = [
-  { label: "컴퓨터소프트웨어공학과", value: "CSE" },
-  { label: "의료 IT공학과", value: "MEDIT" },
-  { label: "정보보호학과", value: "IP" },
-  { label: "사물인터넷학과", value: "IoT" },
-  { label: "메타버스게임학과", value: "METABUS" },
-  { label: "AI빅데이터공학과", value: "AI_BIGDATA" },
-];
+import { departments } from "@/constants/constants";
+import { SigninSchema, SigninFormData } from "@/schemas/signinSchema";
 
 export default function SignupPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<SigninFormData>({
+    resolver: zodResolver(SigninSchema),
     defaultValues: {
-      studentId: "",
+      username: "",
       department: "",
       name: "",
       password: "",
       confirmPassword: "",
-      userType: "STUDENT",
+      role: "STUDENT",
     },
   });
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
+  async function onSubmit(data: SigninFormData) {
     setIsLoading(true);
     try {
       const selectedDepartment = departments.find(
@@ -62,11 +37,11 @@ export default function SignupPage() {
       const response = await axios.post(
         "http://ec2-15-165-241-189.ap-northeast-2.compute.amazonaws.com:8080/api/v1/signup",
         {
-          username: data.studentId,
+          username: data.username,
           department: selectedDepartment ? selectedDepartment.value : "",
           name: data.name,
           password: data.password,
-          role: data.userType,
+          role: "STUDENT",
         }
       );
 
@@ -94,7 +69,7 @@ export default function SignupPage() {
           className="w-[328px] space-y-6 mb-10">
           <TextField
             control={form.control}
-            name="studentId"
+            name="username"
             label="학번"
             placeholder="학번을 입력하세요"
           />
@@ -123,29 +98,7 @@ export default function SignupPage() {
             label="비밀번호 확인"
             placeholder="비밀번호를 다시 입력하세요"
           />
-          <div className="w-[328px]">
-            <div className="text-sm mb-2">사용자 유형</div>
-            <div className="flex space-x-4">
-              <Button
-                type="button"
-                variant={
-                  form.watch("userType") === "STUDENT" ? "default" : "outline"
-                }
-                onClick={() => form.setValue("userType", "STUDENT")}
-                className="flex-1 bg-gray-200 text-black hover:bg-gray-300">
-                일반
-              </Button>
-              <Button
-                type="button"
-                variant={
-                  form.watch("userType") === "ADMIN" ? "default" : "outline"
-                }
-                onClick={() => form.setValue("userType", "ADMIN")}
-                className="flex-1 bg-gray-200 text-black hover:bg-gray-300">
-                관리자
-              </Button>
-            </div>
-          </div>
+
           <Button
             type="submit"
             className="w-[328px] h-11 bg-[#235698] text-white font-semibold rounded-lg"

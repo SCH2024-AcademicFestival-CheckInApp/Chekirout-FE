@@ -1,3 +1,6 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import BottomNav from "@/components/BottonNav";
 import FloatingQRButton from "@/components/FloatingQRButton";
 import TopNav from "@/components/TopNav";
@@ -8,12 +11,17 @@ export default function UserLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const hideFloatingQRButton =
+    pathname === "/user/mypage" || pathname === "/user/mypage/edit";
+  const hideNav = pathname === "/user/mypage/edit";
+
   return (
     <UserGlobalLayout>
       <TopNav />
       {children}
-      <FloatingQRButton />
-      <BottomNav />
+      {!hideFloatingQRButton && <FloatingQRButton />}
+      {!hideNav && <BottomNav />}
     </UserGlobalLayout>
   );
 }
