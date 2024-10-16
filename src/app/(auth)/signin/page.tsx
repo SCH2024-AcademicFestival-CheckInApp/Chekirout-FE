@@ -25,9 +25,9 @@ export default function SignupPage() {
       username: "",
       department: "",
       name: "",
+      email: "",
       password: "",
       confirmPassword: "",
-      role: "STUDENT",
     },
   });
 
@@ -37,8 +37,15 @@ export default function SignupPage() {
       return;
     }
     try {
-      await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/validate-username?username=${username}`
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/validate-username`,
+        {
+          params: { username },
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
       );
       setUsernameError(null);
     } catch (error) {
@@ -78,14 +85,13 @@ export default function SignupPage() {
           username: data.username,
           department: selectedDepartment ? selectedDepartment.value : "",
           name: data.name,
+          email: data.email,
           password: data.password,
-          role: "STUDENT",
         }
       );
 
       if (response.status === 200) {
-        console.log("회원가입이 완료되었습니다.");
-        router.push("/login");
+        console.log("이메일 인증으로 넘어갑니다.");
       }
     } catch (error) {
       console.error("회원가입 오류:", error);
@@ -131,6 +137,12 @@ export default function SignupPage() {
             name="name"
             label="이름"
             placeholder="이름을 입력하세요"
+          />
+          <TextField
+            control={form.control}
+            name="email"
+            label="이메일"
+            placeholder="이메일"
           />
           <PasswordField
             control={form.control}
