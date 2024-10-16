@@ -54,7 +54,7 @@ export const Device = ({ control }: DeviceProps) => {
           type="button"
           variant="outline"
           size="sm"
-          className="mt-2 w-full"
+          className="mt-2 w-full mb-4"
           onClick={() => append("")}>
           <PlusCircle className="h-4 w-4 mr-2" />
           디바이스 추가
