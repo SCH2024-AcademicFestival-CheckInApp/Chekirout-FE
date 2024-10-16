@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import axios from "axios";
-import { useState } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -15,6 +15,9 @@ import { SigninSchema, SigninFormData } from "@/schemas/signinSchema";
 export default function SignupPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [debouncedUsername, setDebouncedUsername] = useState("");
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
   const form = useForm<SigninFormData>({
     resolver: zodResolver(SigninSchema),
@@ -28,6 +31,41 @@ export default function SignupPage() {
     },
   });
 
+  const validateUsername = useCallback(async (username: string) => {
+    if (!username) {
+      setUsernameError(null);
+      return;
+    }
+    try {
+      await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/validate-username?username=${username}`
+      );
+      setUsernameError(null);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 400) {
+        setUsernameError("이미 사용 중인 학번입니다.");
+      } else {
+        console.error("학번 유효성 검사 오류:", error);
+        setUsernameError("학번 확인 중 오류가 발생했습니다.");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+    debounceTimer.current = setTimeout(() => {
+      validateUsername(debouncedUsername);
+    }, 1000);
+
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, [debouncedUsername, validateUsername]);
+
   async function onSubmit(data: SigninFormData) {
     setIsLoading(true);
     try {
@@ -35,7 +73,7 @@ export default function SignupPage() {
         (dept) => dept.value === data.department
       );
       const response = await axios.post(
-        "http://ec2-15-165-241-189.ap-northeast-2.compute.amazonaws.com:8080/api/v1/signup",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/signup`,
         {
           username: data.username,
           department: selectedDepartment ? selectedDepartment.value : "",
@@ -72,7 +110,15 @@ export default function SignupPage() {
             name="username"
             label="학번"
             placeholder="학번을 입력하세요"
+            onChange={(e) => {
+              form.setValue("username", e.target.value);
+              setDebouncedUsername(e.target.value);
+            }}
+            error={usernameError}
           />
+          {usernameError && (
+            <p className="text-red-500 text-sm mt-1">{usernameError}</p>
+          )}
           <SelectField
             control={form.control}
             name="department"
@@ -102,7 +148,7 @@ export default function SignupPage() {
           <Button
             type="submit"
             className="w-[328px] h-11 bg-[#235698] text-white font-semibold rounded-lg"
-            disabled={isLoading}>
+            disabled={isLoading || !!usernameError}>
             {isLoading ? "처리 중..." : "회원가입"}
           </Button>
         </form>
