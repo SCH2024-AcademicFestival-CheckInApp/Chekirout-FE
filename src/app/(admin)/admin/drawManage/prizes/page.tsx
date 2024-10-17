@@ -8,6 +8,7 @@ import { Prize, columns } from "./columns";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { PrizeData, PrizeModal } from "@/components/prize-modal";
+import { PrizeAlert } from "@/components/PrizeAlert";
 
 async function getData(): Promise<Prize[]> {
   try {
@@ -158,6 +159,7 @@ export default function PrizesManagePage() {
   return (
     <div className="container mx-auto py-10">
       <h1 className="text-2xl font-bold mb-4">경품 관리</h1>
+      <PrizeAlert />
       {isLoading ? (
         <div>로딩 중...</div>
       ) : (
