@@ -12,13 +12,7 @@ export type Prize = {
 export const columns: ColumnDef<Prize>[] = [
   {
     id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="모두 선택"
-      />
-    ),
+    header: "선택",
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
@@ -29,10 +23,7 @@ export const columns: ColumnDef<Prize>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    accessorKey: "prizeId",
-    header: "경품번호",
-  },
+
   {
     accessorKey: "prizeName",
     header: "경품명",
