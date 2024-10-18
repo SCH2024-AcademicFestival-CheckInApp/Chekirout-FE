@@ -134,9 +134,8 @@ export default function SignupPage() {
         const errorData = error.response.data;
         switch (errorData.code) {
           case 5005:
-            setEmailError(
-              "이미 인증 링크가 전송되었습니다. 메일을 확인해주세요."
-            );
+            setEmailError("인증 메일이 발송되었습니다. 메일을 확인해주세요.");
+            setIsEmailVerificationSent(false);
             break;
           case 9999:
             setEmailError(
