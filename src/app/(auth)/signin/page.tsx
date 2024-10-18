@@ -18,6 +18,10 @@ export default function SignupPage() {
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [isEmailVerificationSent, setIsEmailVerificationSent] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [confirmPasswordError, setConfirmPasswordError] = useState<
+    string | null
+  >(null);
 
   // 라우터 참조
   const router = useRouter();
@@ -38,6 +42,11 @@ export default function SignupPage() {
   // useDebounce 훅 사용
   const debouncedUsername = useDebounce(form.watch("username"), 1000);
   const debouncedEmail = useDebounce(form.watch("email"), 1000);
+  const debouncedPassword = useDebounce(form.watch("password"), 500);
+  const debouncedConfirmPassword = useDebounce(
+    form.watch("confirmPassword"),
+    500
+  );
 
   // 학번 유효성 검사 함수
   const validateUsername = useCallback(async (username: string) => {
@@ -106,6 +115,27 @@ export default function SignupPage() {
     }
   }, []);
 
+  // 비밀번호 유효성 검사
+  const validatePassword = useCallback((password: string) => {
+    if (password.length < 6) {
+      setPasswordError("비밀번호는 최소 6자 이상이어야 합니다.");
+    } else {
+      setPasswordError(null);
+    }
+  }, []);
+
+  // 비밀번호 확인 유효성 검사
+  const validateConfirmPassword = useCallback(
+    (password: string, confirmPassword: string) => {
+      if (password !== confirmPassword) {
+        setConfirmPasswordError("비밀번호가 일치하지 않습니다.");
+      } else {
+        setConfirmPasswordError(null);
+      }
+    },
+    []
+  );
+
   // useEffect를 사용하여 디바운스된 값이 변경될 때마다 유효성 검사 실행
   useEffect(() => {
     validateUsername(debouncedUsername);
@@ -114,6 +144,14 @@ export default function SignupPage() {
   useEffect(() => {
     validateEmail(debouncedEmail);
   }, [debouncedEmail, validateEmail]);
+
+  useEffect(() => {
+    validatePassword(debouncedPassword);
+  }, [debouncedPassword, validatePassword]);
+
+  useEffect(() => {
+    validateConfirmPassword(debouncedPassword, debouncedConfirmPassword);
+  }, [debouncedPassword, debouncedConfirmPassword, validateConfirmPassword]);
 
   // 이메일 인증 요청 처리
   const handleEmailVerification = async () => {
@@ -252,17 +290,31 @@ export default function SignupPage() {
             name="password"
             label="비밀번호"
             placeholder="비밀번호를 입력하세요"
+            error={passwordError}
           />
+          {passwordError && (
+            <p className="text-red-500 text-sm">{passwordError}</p>
+          )}
           <PasswordField
             control={form.control}
             name="confirmPassword"
             label="비밀번호 확인"
             placeholder="비밀번호를 다시 입력하세요"
+            error={confirmPasswordError}
           />
+          {confirmPasswordError && (
+            <p className="text-red-500 text-sm">{confirmPasswordError}</p>
+          )}
           <Button
             type="submit"
             className="w-full h-11 bg-[#235698] text-white font-semibold rounded-lg"
-            disabled={isLoading || !!usernameError}>
+            disabled={
+              isLoading ||
+              !!usernameError ||
+              !!emailError ||
+              !!passwordError ||
+              !!confirmPasswordError
+            }>
             {isLoading ? "처리 중..." : "회원가입"}
           </Button>
         </form>
