@@ -3,12 +3,15 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 
 export interface UserInfo {
+  username: string;
   name: string;
   department: string;
-  username: string;
+  role: string;
+  isNotificationEnabled: boolean | null;
+  phone: string;
   email: string;
-  phoneNumber: string;
-  devices: string[];
+  deviceToken: string | null;
+  deviceName: string;
 }
 
 export function useUserInfo() {
@@ -25,7 +28,7 @@ export function useUserInfo() {
       }
 
       try {
-        const response = await axios.get(
+        const response = await axios.get<UserInfo>(
           `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/profile`,
           {
             headers: {

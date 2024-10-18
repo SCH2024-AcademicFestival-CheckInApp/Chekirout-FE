@@ -30,11 +30,11 @@ export default function EditMyPage() {
       department: userInfo?.department || "",
       name: userInfo?.name || "",
       email: userInfo?.email || "",
-      phoneNumber: userInfo?.phoneNumber || "",
+      phone: userInfo?.phone || "",
       currentPassword: "",
       newPassword: "",
       confirmPassword: "",
-      devices: [""],
+      deviceName: userInfo?.deviceName || "",
     },
   });
 
@@ -48,11 +48,11 @@ export default function EditMyPage() {
         department: departmentName,
         name: userInfo.name,
         email: userInfo.email,
-        phoneNumber: userInfo.phoneNumber,
+        phone: userInfo.phone,
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
-        devices: [""],
+        deviceName: userInfo.deviceName,
       });
     }
   }, [userInfo, form]);
@@ -204,7 +204,7 @@ export default function EditMyPage() {
           />
           <TextField
             control={form.control}
-            name="phoneNumber"
+            name="phone"
             label="전화번호"
             placeholder="전화번호"
           />
@@ -227,7 +227,12 @@ export default function EditMyPage() {
             placeholder="새 비밀번호 확인"
           />
 
-          <Device control={form.control} />
+          <TextField
+            control={form.control}
+            name="deviceName"
+            label="디바이스 이름"
+            disabled
+          />
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "저장 중..." : "저장하기"}

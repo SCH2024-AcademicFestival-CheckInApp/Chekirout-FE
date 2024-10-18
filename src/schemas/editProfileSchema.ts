@@ -9,7 +9,7 @@ export const EditProfileSchema = z
       .string()
       .email({ message: "유효한 이메일 주소를 입력해주세요." })
       .or(z.literal("")),
-    phoneNumber: z
+    phone: z
       .string()
       .min(10, { message: "올바른 전화번호를 입력해주세요." })
       .or(z.literal("")),
@@ -22,9 +22,7 @@ export const EditProfileSchema = z
       .min(6, "새 비밀번호는 최소 6자 이상이어야 합니다.")
       .or(z.literal("")),
     confirmPassword: z.string().or(z.literal("")),
-    devices: z
-      .array(z.string())
-      .max(2, "최대 2개의 디바이스만 등록할 수 있습니다."),
+    deviceName: z.string(),
   })
   .refine(
     (data) => {
