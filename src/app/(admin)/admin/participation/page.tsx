@@ -74,6 +74,7 @@ export default function ParticipationPage() {
 
   return (
     <div className="container mx-auto py-10">
+      <h1 className="text-2xl font-bold mb-4">참여 관리</h1>
       <DataTable
         columns={columns}
         data={data}
