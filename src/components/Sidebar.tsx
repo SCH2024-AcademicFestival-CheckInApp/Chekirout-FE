@@ -65,7 +65,7 @@ const Sidebar = () => {
               <>
                 <SubItem title="추첨" href="/admin/drawManage/draw" />
                 <SubItem title="당첨자 확인" href="/admin/drawManage/winners" />
-                <SubItem title="수령 확인" href="/admin/drawManage/claim" />
+                <SubItem title="경품 관리" href="/admin/drawManage/prizes" />
               </>
             )}
           </SidebarItem>

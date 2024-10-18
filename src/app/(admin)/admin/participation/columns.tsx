@@ -50,7 +50,7 @@ export const columns: ColumnDef<User>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          이름
+          학번
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -58,7 +58,7 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "studentId",
-    header: "학번",
+    header: "이름",
   },
   {
     accessorKey: "stampCount",
@@ -68,7 +68,7 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: "isCompleted",
     header: "종료여부",
     cell: ({ row }) => (
-      <span>{row.getValue("endTimestamp") ? "예" : "아니오"}</span>
+      <span>{row.getValue("isCompleted") ? "예" : "아니오"}</span>
     ),
   },
 

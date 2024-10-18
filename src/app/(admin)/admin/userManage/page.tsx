@@ -218,6 +218,7 @@ export default function UserManagePage() {
 
   return (
     <div className="container mx-auto py-10">
+      <h1 className="text-2xl font-bold mb-4">유저 관리</h1>
       <DataTable
         columns={columns}
         data={data}
