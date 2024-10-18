@@ -47,8 +47,13 @@ export default function EditMyPage() {
         username: userInfo.username,
         department: departmentName,
         name: userInfo.name,
+<<<<<<< HEAD
         email: userInfo.email,
         phone: userInfo.phone,
+=======
+        email: userInfo.email ?? "",
+        phoneNumber: userInfo.phoneNumber ?? "",
+>>>>>>> origin/develop
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",

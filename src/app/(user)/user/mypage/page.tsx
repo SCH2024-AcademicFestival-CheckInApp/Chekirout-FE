@@ -28,7 +28,7 @@ export default function MyPage() {
 
   return (
     <main className="relative flex flex-col items-center">
-      <div className="relative">
+      <div className="relative mt-20">
         <Image src="/assets/Card.png" alt="카드" width={332} height={480} />
         <div className="absolute top-4 right-4 text-right text-white">
           <p className="font-bold text-2xl">{userInfo?.name}</p>
@@ -43,7 +43,7 @@ export default function MyPage() {
         </Button>
       </Link>
 
-      <div className="mt-8 flex gap-4">
+      <div className="mt-8 mb-14 flex gap-4">
         <Link href="/admin" className="text-gray-500 hover:underline">
           관리자 페이지
         </Link>
