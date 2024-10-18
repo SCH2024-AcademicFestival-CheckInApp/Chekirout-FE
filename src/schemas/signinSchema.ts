@@ -3,7 +3,7 @@ import * as z from "zod";
 export const SigninSchema = z
   .object({
     username: z.string().length(8, {
-      message: "학번 8자리를 입력해주세요.",
+      message: "학번은 8자리여야 합니다.",
     }),
     department: z.string().min(1, "학과를 선택해주세요"),
     name: z.string().min(1, "이름을 입력해주세요"),
