@@ -59,13 +59,19 @@ export default function SignupPage() {
       setUsernameError(null);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        // 백엔드에서 제공하는 오류 메시지
-        const errorData = error.response.data;
-        setUsernameError(
-          errorData.error || "학번 확인 중 오류가 발생했습니다."
-        );
+        const { data } = error.response;
+        if (typeof data === "object" && "error" in data) {
+          // 객체 형태의 에러 응답 처리
+          setUsernameError(data.error);
+        } else if (typeof data === "string") {
+          // 문자열 형태의 에러 응답 처리
+          setUsernameError(data);
+        } else {
+          // 알 수 없는 형식의 에러 응답
+          setUsernameError("학번 확인 중 알 수 없는 오류가 발생했습니다.");
+        }
       } else {
-        console.error("학번 유효성 검사 오류:", error);
+        // 네트워크 오류 등 기타 오류
         setUsernameError("학번 확인 중 오류가 발생했습니다.");
       }
     }
@@ -92,7 +98,7 @@ export default function SignupPage() {
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         const errorData = error.response.data;
-        setEmailError("중복된 이메일입니다.");
+        setEmailError(errorData);
       } else {
         console.error("이메일 유효성 검사 오류:", error);
         setEmailError("이메일 확인 중 오류가 발생했습니다.");
