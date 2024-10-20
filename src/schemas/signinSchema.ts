@@ -16,6 +16,7 @@ export const SigninSchema = z
     password: z.string().min(6, {
       message: "비밀번호는 최소 6자 이상이어야 합니다.",
     }),
+    phone: z.string(),
     confirmPassword: z.string(),
     role: z.enum(["STUDENT", "ADMIN"]),
   })

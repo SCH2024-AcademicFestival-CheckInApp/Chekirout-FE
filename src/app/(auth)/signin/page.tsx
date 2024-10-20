@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useCallback, useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation"; // useSearchParams 추가
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { TextField, PasswordField, SelectField } from "@/components/FormField";
@@ -20,9 +20,9 @@ export default function SignupPage() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [confirmPasswordError, setConfirmPasswordError] = useState<string | null>(null);
   
-  const [isEmailVerified, setIsEmailVerified] = useState(false); // 이메일 인증 여부
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams(); // 쿼리 파라미터를 사용하기 위한 Hook
+  const searchParams = useSearchParams();
   
   const form = useForm<SigninFormData>({
     resolver: zodResolver(SigninSchema),
@@ -33,6 +33,8 @@ export default function SignupPage() {
       email: "",
       password: "",
       confirmPassword: "",
+      phone: "",
+      role: "STUDENT",
     },
   });
 
@@ -41,7 +43,6 @@ export default function SignupPage() {
   const debouncedPassword = useDebounce(form.watch("password"), 500);
   const debouncedConfirmPassword = useDebounce(form.watch("confirmPassword"), 500);
 
-  // 쿼리 파라미터 확인하여 이메일 인증 상태 설정
   useEffect(() => {
     const emailVerified = searchParams.get("emailVerified");
     if (emailVerified === "true") {
@@ -157,29 +158,41 @@ export default function SignupPage() {
 
   async function onSubmit(data: SigninFormData) {
     setIsLoading(true);
-    console.log("제출 데이터:", data); 
     try {
-      const selectedDepartment = departments.find((dept) => dept.value === data.department);
+      console.log("회원가입 시작:", data);
+
+      const requestBody = {
+        username: data.username,
+        department: data.department,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        password: data.password,
+        role: data.role,
+      };
+      console.log("요청 데이터:", requestBody);
+
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/v1/signup`,
-        {
-          username: data.username,
-          department: selectedDepartment ? selectedDepartment.value : "",
-          name: data.name,
-          email: data.email,
-          password: data.password,
-        }
+        requestBody
       );
 
+      console.log("서버 응답:", response);
+
       if (response.status === 200) {
-        console.log("회원가입이 성공적으로 완료되었습니다.");
+        console.log("회원가입 성공:", response.data);
         alert("회원가입이 성공적으로 완료되었습니다.");
         router.push("/login");
       }
     } catch (error) {
       console.error("회원가입 중 오류 발생:", error);
+      if (axios.isAxiosError(error)) {
+        console.error("에러 상태:", error.response?.status);
+        console.error("에러 데이터:", error.response?.data);
+      }
     } finally {
       setIsLoading(false);
+      console.log("회원가입 프로세스 종료");
     }
   }
 
@@ -191,17 +204,16 @@ export default function SignupPage() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-[328px] space-y-6 mb-10">
-          <TextField control={form.control} name="username" label="학번" placeholder="학번을 입력하세요" error={usernameError} />
+          <TextField control={form.control} name="username" label="학번" placeholder="학번을 입력하세요" />
           {usernameError && <p className="text-red-500 text-sm">{usernameError}</p>}
 
           <SelectField control={form.control} name="department" label="학과" options={departments} placeholder="학과를 선택하세요" />
           <TextField control={form.control} name="name" label="이름" placeholder="이름을 입력하세요" />
 
-          {!isEmailVerified && (
-            <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-2">
               <div className="flex items-end space-x-2">
                 <div className="flex-grow">
-                  <TextField control={form.control} name="email" label="이메일" placeholder="이메일" error={emailError} />
+                  <TextField control={form.control} name="email" label="이메일" placeholder="이메일" />
                 </div>
                 <Button type="button" onClick={handleEmailVerification} className="h-10 px-5 bg-[#235698] text-white font-semibold rounded-lg" disabled={isEmailVerificationSent || !!emailError}>
                   {isEmailVerificationSent ? "발송됨" : "인증"}
@@ -209,17 +221,16 @@ export default function SignupPage() {
               </div>
               {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
             </div>
-          )}
 
            <TextField control={form.control} name="phone" label="휴대폰 번호" placeholder="휴대폰 번호를 입력하세요" />
 
-          <PasswordField control={form.control} name="password" label="비밀번호" placeholder="비밀번호를 입력하세요" error={passwordError} />
+          <PasswordField control={form.control} name="password" label="비밀번호" placeholder="비밀번호를 입력하세요" />
           {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
 
-          <PasswordField control={form.control} name="confirmPassword" label="비밀번호 확인" placeholder="비밀번호를 다시 입력하세요" error={confirmPasswordError} />
+          <PasswordField control={form.control} name="confirmPassword" label="비밀번호 확인" placeholder="비밀번호를 다시 입력하세요" />
           {confirmPasswordError && <p className="text-red-500 text-sm">{confirmPasswordError}</p>}
 
-          <Button type="submit" className="w-full h-11 bg-[#235698] text-white font-semibold rounded-lg" disabled={isLoading || !!usernameError || !!emailError || !!passwordError || !!confirmPasswordError || !isEmailVerified}>
+          <Button type="submit"  className="w-full h-11 bg-[#235698] text-white font-semibold rounded-lg" disabled={isLoading || !!usernameError || !!emailError || !!passwordError || !!confirmPasswordError || !isEmailVerified}>
             {isLoading ? "처리 중..." : "회원가입"}
           </Button>
         </form>
