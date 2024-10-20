@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useCallback, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation"; // useSearchParams 추가
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { TextField, PasswordField, SelectField } from "@/components/FormField";
@@ -18,12 +18,12 @@ export default function SignupPage() {
   const [isEmailVerificationSent, setIsEmailVerificationSent] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
-  const [confirmPasswordError, setConfirmPasswordError] = useState<
-    string | null
-  >(null);
-
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string | null>(null);
+  
+  const [isEmailVerified, setIsEmailVerified] = useState(false); // 이메일 인증 여부
   const router = useRouter();
-
+  const searchParams = useSearchParams(); // 쿼리 파라미터를 사용하기 위한 Hook
+  
   const form = useForm<SigninFormData>({
     resolver: zodResolver(SigninSchema),
     defaultValues: {
@@ -39,10 +39,15 @@ export default function SignupPage() {
   const debouncedUsername = useDebounce(form.watch("username"), 1000);
   const debouncedEmail = useDebounce(form.watch("email"), 1000);
   const debouncedPassword = useDebounce(form.watch("password"), 500);
-  const debouncedConfirmPassword = useDebounce(
-    form.watch("confirmPassword"),
-    500
-  );
+  const debouncedConfirmPassword = useDebounce(form.watch("confirmPassword"), 500);
+
+  // 쿼리 파라미터 확인하여 이메일 인증 상태 설정
+  useEffect(() => {
+    const emailVerified = searchParams.get("emailVerified");
+    if (emailVerified === "true") {
+      setIsEmailVerified(true);
+    }
+  }, [searchParams]);
 
   const validateUsername = useCallback(async (username: string) => {
     if (!username) {
@@ -64,24 +69,13 @@ export default function SignupPage() {
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         const { data } = error.response;
-        if (typeof data === "object" && "error" in data) {
-          // 객체 형태의 에러 응답 처리
-          setUsernameError(data.error);
-        } else if (typeof data === "string") {
-          // 문자열 형태의 에러 응답 처리
-          setUsernameError(data);
-        } else {
-          // 알 수 없는 형식의 에러 응답
-          setUsernameError("학번 확인 중 알 수 없는 오류가 발생했습니다.");
-        }
+        setUsernameError(data.error || "학번 확인 중 오류가 발생했습니다.");
       } else {
-        // 네트워크 오류 등 기타 오류
         setUsernameError("학번 확인 중 오류가 발생했습니다.");
       }
     }
   }, []);
 
-  // 이메일 유효성 검사 함수
   const validateEmail = useCallback(async (email: string) => {
     if (!email) {
       setEmailError(null);
@@ -101,16 +95,13 @@ export default function SignupPage() {
       setEmailError(null);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        const errorData = error.response.data;
-        setEmailError(errorData);
+        setEmailError(error.response.data);
       } else {
-        console.error("이메일 유효성 검사 오류:", error);
         setEmailError("이메일 확인 중 오류가 발생했습니다.");
       }
     }
   }, []);
 
-  // 비밀번호 유효성 검사
   const validatePassword = useCallback((password: string) => {
     if (password.length < 6) {
       setPasswordError("비밀번호는 최소 6자 이상이어야 합니다.");
@@ -119,19 +110,14 @@ export default function SignupPage() {
     }
   }, []);
 
-  // 비밀번호 확인 유효성 검사
-  const validateConfirmPassword = useCallback(
-    (password: string, confirmPassword: string) => {
-      if (password !== confirmPassword) {
-        setConfirmPasswordError("비밀번호가 일치하지 않습니다.");
-      } else {
-        setConfirmPasswordError(null);
-      }
-    },
-    []
-  );
+  const validateConfirmPassword = useCallback((password: string, confirmPassword: string) => {
+    if (password !== confirmPassword) {
+      setConfirmPasswordError("비밀번호가 일치하지 않습니다.");
+    } else {
+      setConfirmPasswordError(null);
+    }
+  }, []);
 
-  // useEffect를 사용하여 디바운스된 값이 변경될 때마다 유효성 검사 실행
   useEffect(() => {
     validateUsername(debouncedUsername);
   }, [debouncedUsername, validateUsername]);
@@ -148,7 +134,6 @@ export default function SignupPage() {
     validateConfirmPassword(debouncedPassword, debouncedConfirmPassword);
   }, [debouncedPassword, debouncedConfirmPassword, validateConfirmPassword]);
 
-  // 이메일 인증 요청 처리
   const handleEmailVerification = async () => {
     const email = form.getValues("email");
     if (!email) {
@@ -159,49 +144,22 @@ export default function SignupPage() {
     try {
       const encodedEmail = encodeURIComponent(email);
       const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/checkEmail?email=${encodedEmail}`;
-      console.log("요청 주소:", url);
 
       const response = await axios.post(url);
-      console.log("응답:", response);
 
       setIsEmailVerificationSent(true);
       setEmailError(null);
       console.log("인증 이메일이 발송되었습니다.");
     } catch (error) {
-      console.error("이메일 인증 요청 오류:", error);
-      if (axios.isAxiosError(error) && error.response) {
-        const errorData = error.response.data;
-        switch (errorData.code) {
-          case 5005:
-            setEmailError("인증 메일이 발송되었습니다. 메일을 확인해주세요.");
-            setIsEmailVerificationSent(false);
-            break;
-          case 9999:
-            setEmailError(
-              "서버 에러가 발생하였습니다. 관리자에게 문의해 주세요."
-            );
-            setIsEmailVerificationSent(false);
-            break;
-          default:
-            setEmailError(
-              errorData.error || "이메일 인증 요청 중 오류가 발생했습니다."
-            );
-            setIsEmailVerificationSent(false);
-        }
-      } else {
-        setEmailError("이메일 인증 요청 중 오류가 발생했습니다.");
-        setIsEmailVerificationSent(false);
-      }
+      setEmailError("이메일 인증 요청 중 오류가 발생했습니다.");
     }
   };
 
-  // 회원가입 제출 처리
   async function onSubmit(data: SigninFormData) {
     setIsLoading(true);
+    console.log("제출 데이터:", data); 
     try {
-      const selectedDepartment = departments.find(
-        (dept) => dept.value === data.department
-      );
+      const selectedDepartment = departments.find((dept) => dept.value === data.department);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/v1/signup`,
         {
@@ -214,18 +172,17 @@ export default function SignupPage() {
       );
 
       if (response.status === 200) {
-        console.log("이메일 인증으로 넘어갑니다.");
+        console.log("회원가입이 성공적으로 완료되었습니다.");
+        alert("회원가입이 성공적으로 완료되었습니다.");
         router.push("/login");
       }
     } catch (error) {
-      console.error("회원가입 오류:", error);
-      console.log("회원가입 중 오류가 발생했습니다. 다시 시도해주세요.");
+      console.error("회원가입 중 오류 발생:", error);
     } finally {
       setIsLoading(false);
     }
   }
 
-  // 렌더링
   return (
     <main className="w-[480px] h-screen flex flex-col items-center bg-white overflow-y-auto">
       <div className="text-center pt-[100px] mb-10">
@@ -233,83 +190,34 @@ export default function SignupPage() {
       </div>
 
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-[328px] space-y-6 mb-10">
-          <TextField
-            control={form.control}
-            name="username"
-            label="학번"
-            placeholder="학번을 입력하세요"
-            error={usernameError}
-          />
-          {usernameError && (
-            <p className="text-red-500 text-sm">{usernameError}</p>
-          )}
-          <SelectField
-            control={form.control}
-            name="department"
-            label="학과"
-            options={departments}
-            placeholder="학과를 선택하세요"
-          />
-          <TextField
-            control={form.control}
-            name="name"
-            label="이름"
-            placeholder="이름을 입력하세요"
-          />
-          <div className="flex flex-col space-y-2">
-            <div className="flex items-end space-x-2">
-              <div className="flex-grow">
-                <TextField
-                  control={form.control}
-                  name="email"
-                  label="이메일"
-                  placeholder="이메일"
-                  error={emailError}
-                />
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-[328px] space-y-6 mb-10">
+          <TextField control={form.control} name="username" label="학번" placeholder="학번을 입력하세요" error={usernameError} />
+          {usernameError && <p className="text-red-500 text-sm">{usernameError}</p>}
+
+          <SelectField control={form.control} name="department" label="학과" options={departments} placeholder="학과를 선택하세요" />
+          <TextField control={form.control} name="name" label="이름" placeholder="이름을 입력하세요" />
+
+          {!isEmailVerified && (
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-end space-x-2">
+                <div className="flex-grow">
+                  <TextField control={form.control} name="email" label="이메일" placeholder="이메일" error={emailError} />
+                </div>
+                <Button type="button" onClick={handleEmailVerification} className="h-10 px-5 bg-[#235698] text-white font-semibold rounded-lg" disabled={isEmailVerificationSent || !!emailError}>
+                  {isEmailVerificationSent ? "발송됨" : "인증"}
+                </Button>
               </div>
-              <Button
-                type="button"
-                onClick={handleEmailVerification}
-                className="h-10 px-5 bg-[#235698] text-white font-semibold rounded-lg whitespace-nowrap"
-                disabled={isEmailVerificationSent || !!emailError}>
-                {isEmailVerificationSent ? "발송됨" : "인증"}
-              </Button>
+              {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
             </div>
-            {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
-          </div>
-          <PasswordField
-            control={form.control}
-            name="password"
-            label="비밀번호"
-            placeholder="비밀번호를 입력하세요"
-            error={passwordError}
-          />
-          {passwordError && (
-            <p className="text-red-500 text-sm">{passwordError}</p>
           )}
-          <PasswordField
-            control={form.control}
-            name="confirmPassword"
-            label="비밀번호 확인"
-            placeholder="비밀번호를 다시 입력하세요"
-            error={confirmPasswordError}
-          />
-          {confirmPasswordError && (
-            <p className="text-red-500 text-sm">{confirmPasswordError}</p>
-          )}
-          <Button
-            type="submit"
-            className="w-full h-11 bg-[#235698] text-white font-semibold rounded-lg"
-            disabled={
-              isLoading ||
-              !!usernameError ||
-              !!emailError ||
-              !!passwordError ||
-              !!confirmPasswordError
-            }>
+
+          <PasswordField control={form.control} name="password" label="비밀번호" placeholder="비밀번호를 입력하세요" error={passwordError} />
+          {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
+
+          <PasswordField control={form.control} name="confirmPassword" label="비밀번호 확인" placeholder="비밀번호를 다시 입력하세요" error={confirmPasswordError} />
+          {confirmPasswordError && <p className="text-red-500 text-sm">{confirmPasswordError}</p>}
+
+          <Button type="submit" className="w-full h-11 bg-[#235698] text-white font-semibold rounded-lg" disabled={isLoading || !!usernameError || !!emailError || !!passwordError || !!confirmPasswordError || !isEmailVerified}>
             {isLoading ? "처리 중..." : "회원가입"}
           </Button>
         </form>

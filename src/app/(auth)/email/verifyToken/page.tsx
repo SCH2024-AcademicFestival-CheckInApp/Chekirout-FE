@@ -2,10 +2,12 @@
 
 import { useEffect, useState, useTransition } from 'react';
 import { verifyEmail } from '@/app/actions/verifyEmail';
+import { useRouter } from 'next/navigation';
 
 export default function VerifyTokenPage() {
   const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter(); 
 
   const handleVerifyEmail = (token: string) => {
     startTransition(async () => {
@@ -42,7 +44,7 @@ export default function VerifyTokenPage() {
             <h2 className="text-3xl font-bold text-gray-800 mb-4">인증 성공!</h2>
             <p className="text-lg text-gray-600 mb-6">이메일 인증이 성공적으로 완료되었습니다.</p>
             <button
-              onClick={() => window.location.href = '/signin'}
+              onClick={() => router.push('/signin?emailVerified=true')} 
               className="w-full px-6 py-3 bg-[#235698] text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             >
               회원가입 페이지로 돌아가기
