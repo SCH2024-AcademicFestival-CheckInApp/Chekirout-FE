@@ -13,7 +13,6 @@ import { SigninSchema, SigninFormData } from "@/schemas/signinSchema";
 import { useDebounce } from "@/hooks/useDebounce";
 
 export default function SignupPage() {
-  // 상태 관리
   const [isLoading, setIsLoading] = useState(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [isEmailVerificationSent, setIsEmailVerificationSent] = useState(false);
@@ -23,10 +22,8 @@ export default function SignupPage() {
     string | null
   >(null);
 
-  // 라우터 참조
   const router = useRouter();
 
-  // 폼 설정
   const form = useForm<SigninFormData>({
     resolver: zodResolver(SigninSchema),
     defaultValues: {
@@ -39,7 +36,6 @@ export default function SignupPage() {
     },
   });
 
-  // useDebounce 훅 사용
   const debouncedUsername = useDebounce(form.watch("username"), 1000);
   const debouncedEmail = useDebounce(form.watch("email"), 1000);
   const debouncedPassword = useDebounce(form.watch("password"), 500);
@@ -48,7 +44,6 @@ export default function SignupPage() {
     500
   );
 
-  // 학번 유효성 검사 함수
   const validateUsername = useCallback(async (username: string) => {
     if (!username) {
       setUsernameError(null);
