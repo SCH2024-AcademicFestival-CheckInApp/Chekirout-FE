@@ -211,6 +211,8 @@ export default function SignupPage() {
             </div>
           )}
 
+           <TextField control={form.control} name="phone" label="휴대폰 번호" placeholder="휴대폰 번호를 입력하세요" />
+
           <PasswordField control={form.control} name="password" label="비밀번호" placeholder="비밀번호를 입력하세요" error={passwordError} />
           {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
 
