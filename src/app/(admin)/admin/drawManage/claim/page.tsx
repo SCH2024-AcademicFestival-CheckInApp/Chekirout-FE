@@ -1,3 +1,3 @@
 export default function Admin() {
-  return <main>추첨</main>;
+  return <main>수령</main>;
 }
