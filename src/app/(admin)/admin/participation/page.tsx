@@ -75,7 +75,7 @@ async function getData(
         number: 0,
       };
     }
-    console.error("스탬프 카드 데이터를 가져오는 중 오류 발생:", error);
+    console.error("참여자 정보를 가져오는 중 오류 발생:", error);
     throw error;
   }
 }
