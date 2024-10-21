@@ -204,7 +204,6 @@ export default function WinnersPage() {
       <DataTable
         columns={columnsWithActions}
         data={winners}
-        hideColumns={true}
       />
     </div>
   );
