@@ -257,7 +257,7 @@ export default function UserManagePage() {
               <RotateCcw className="h-4 w-4" />
             </Button>
             {selectedUsers.length > 0 && (
-              <div className="flex items-center space-x-2 pl-40 pr-2">
+              <div className="flex items-center space-x-2 pr-2">
                 <Button onClick={() => handleRoleChange("MASTER")}>
                   Master
                 </Button>
