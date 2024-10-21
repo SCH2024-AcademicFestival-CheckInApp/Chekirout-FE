@@ -32,7 +32,6 @@ export interface ProgramData {
   name: string;
   description: string;
   categoryId: number;
-  categoryName: string;
   startTimestamp: string;
   endTimestamp: string;
   notificationYn: boolean;
@@ -43,7 +42,6 @@ const initialProgramData: ProgramData = {
   name: "",
   description: "",
   categoryId: 0,
-  categoryName: "",
   startTimestamp: "",
   endTimestamp: "",
   notificationYn: false,
@@ -138,39 +136,22 @@ export function ProgramModal({
             <Label htmlFor="categoryId" className="text-right">
               카테고리
             </Label>
-            {mode === "add" ? (
-              <Select
-                onValueChange={(value) =>
-                  setProgramData({
-                    ...programData,
-                    categoryId: Number(value),
-                    categoryName:
-                      categories.find((c) => c.id === Number(value))?.name ||
-                      "",
-                  })
-                }
-                value={programData.categoryId.toString()}>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="카테고리 선택" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem
-                      key={category.id}
-                      value={category.id.toString()}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : (
-              <Input
-                id="categoryName"
-                value={programData.categoryName}
-                className="col-span-3"
-                disabled
-              />
-            )}
+            <Select
+              onValueChange={(value) =>
+                setProgramData({ ...programData, categoryId: Number(value) })
+              }
+              defaultValue={programData.categoryId.toString()}>
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="카테고리 선택" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id.toString()}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="startTimestamp" className="text-right">
