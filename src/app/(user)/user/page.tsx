@@ -14,18 +14,14 @@ import {
 import { useStampCard } from '@/hooks/useStampCard';
 import { EmptyStamp, Stamp } from "@/components/Stamp";
 import { setupAxiosInterceptors } from "@/lib/axiosInterceptor";
+import axios from "axios";
 
 export default function UserPage() {
-    const departments = [
-      { id: 1, name: '컴퓨터소프트웨어공학과', participants: 216 },
-      { id: 2, name: '컴퓨터소프트웨어공학과', participants: 216 },
-      { id: 3, name: '컴퓨터소프트웨어공학과', participants: 216 },
-      { id: 4, name: '컴퓨터소프트웨어공학과', participants: 216 },
-      { id: 5, name: '컴퓨터소프트웨어공학과', participants: 216 },
-    ];
     const router = useRouter();
     const [hoveredStamp, setHoveredStamp] = useState<number | null>(null);
     const { data: stampCard, isLoading, error } = useStampCard();
+    const [departmentRanking, setDepartmentRanking] = useState<Array<{ department: string; stampCardCount: number }>>([]);
+    const [totalParticipants, setTotalParticipants] = useState(0);
     
     useEffect(() => {
       const accessToken = localStorage.getItem("accessToken");
@@ -34,7 +30,19 @@ export default function UserPage() {
           router.push("/login");
       } 
       setupAxiosInterceptors(router);
-  }, [router]);
+
+      const fetchDepartmentRanking = async () => {
+        try {
+          const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/stamp-cards/department-cards-ranking`);
+          setDepartmentRanking(response.data);
+          setTotalParticipants(response.data.reduce((sum: number, dept: { stampCardCount: number }) => sum + dept.stampCardCount, 0));
+        } catch (error) {
+          console.error("Failed to fetch department ranking:", error);
+        }
+      };
+
+      fetchDepartmentRanking();
+    }, [router]);
   
     if (isLoading) return (
         <div className="flex justify-center items-center h-screen">
@@ -52,6 +60,18 @@ export default function UserPage() {
 
     const totalStamps = 5; 
     const completedStamps = stampCard?.stampCount ?? 0;
+
+    const getDepartmentName = (dept: string) => {
+        switch (dept) {
+            case 'CSE': return '컴퓨터소프트웨어공학과';
+            case 'IoT': return '사물인터넷학과';
+            case 'MEDIT': return '의료IT공학과';
+            case 'IP': return '정보보호학과';
+            case 'AI_BIGDATA': return 'AI빅데이터학과';
+            case 'METABUS': return '메타버스&게임학과';
+            default: return dept;
+        }
+    };
 
     return (
         <main className="w-full min-h-screen flex flex-col p-6 mt-12">
@@ -111,19 +131,19 @@ export default function UserPage() {
 
             <Card className="bg-gray-50 border-0 m-4">
                 <CardContent className="px-6 py-4">
-                    {departments.map((dept, index) => (
-                        <div key={dept.id} className="flex justify-between items-center p-2">
+                    {departmentRanking.map((dept, index) => (
+                        <div key={index} className="flex justify-between items-center p-2">
                             <div className="flex items-center py-2">
                                 <div className="mr-6 text-sm text-blue-800">{index + 1}</div>
-                                <div className='text-sm text-gray-600'>{dept.name}</div>
+                                <div className='text-sm text-gray-600'>{getDepartmentName(dept.department)}</div>
                             </div>
-                            <div className="text-sm text-gray-600">{dept.participants}명</div>
+                            <div className="text-sm text-gray-600">{dept.stampCardCount}명</div>
                         </div>
                     ))}
                 </CardContent>
             </Card>
             <div className="text-center font-bold text-lg mt-4">
-               🎉 &nbsp; 현재 <span className="text-blue-900">62</span>명이 참여중이에요!
+               🎉 &nbsp; 현재 <span className="text-blue-900">{totalParticipants}</span>명이 참여중이에요!
             </div>
         </main>
     );

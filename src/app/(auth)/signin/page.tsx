@@ -213,7 +213,7 @@ export default function SignupPage() {
           <div className="flex flex-col space-y-2">
               <div className="flex items-end space-x-2">
                 <div className="flex-grow">
-                  <TextField control={form.control} name="email" label="이메일" placeholder="이메일" />
+                  <TextField control={form.control} name="email" label="순천향대학교 웹메일" placeholder="user@sch.ac.kr" />
                 </div>
                 <Button type="button" onClick={handleEmailVerification} className="h-10 px-5 bg-[#235698] text-white font-semibold rounded-lg" disabled={isEmailVerificationSent || !!emailError}>
                   {isEmailVerificationSent ? "발송됨" : "인증"}

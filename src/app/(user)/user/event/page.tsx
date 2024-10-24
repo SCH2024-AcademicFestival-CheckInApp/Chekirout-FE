@@ -60,12 +60,12 @@ export default function ProgramsPage() {
         {programs.map((program) => (
           <div key={program.id} className="bg-white rounded-xl shadow-sm p-5 transition-all duration-300 hover:shadow-lg border border-indigo-100">
             <div className="flex justify-between items-center mb-3">
-              <h2 className="text-md font-semibold text-black">{program.name}</h2>
-              <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+              <h2 className="text-sm font-semibold text-black">{program.name}</h2>
+              <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-medium">
                 {program.categoryName}
               </span>
             </div>
-            <p className="text-sm text-gray-600 mb-2 line-clamp-2">{program.description}</p>
+            <p className="text-xs text-gray-600 mb-2 line-clamp-2">{program.description}</p>
             <div className="text-xs text-gray-800 flex items-center">
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />

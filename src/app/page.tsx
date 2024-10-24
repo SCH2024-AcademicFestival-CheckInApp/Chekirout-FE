@@ -1,3 +1,5 @@
+"use client"
+
 import Splash from "@/components/Splash";
 import { Button } from "@/components/ui/button";
 import UserGlobalLayout from "@/components/UserGlobalLayout";
@@ -16,10 +18,16 @@ export default function Home() {
         <Image src="/assets/icon512.png" alt="logo" width={240} height={240} />
       </div>
       <div className="flex flex-col space-y-4 py-8">
-        <Button className="w-[328px] h-11 bg-[#235698] text-white font-semibold rounded-lg">
+        <Button
+          className="w-[328px] h-11 bg-[#235698] text-white font-semibold rounded-lg"
+          onClick={() => window.location.href = '/login'}
+        >
           로그인
         </Button>
-        <Button className="w-[328px] h-11 bg-[#acacac] text-white font-semibold rounded-lg">
+        <Button
+          className="w-[328px] h-11 bg-[#acacac] text-white font-semibold rounded-lg"
+          onClick={() => window.location.href = '/signin'}
+        >
           회원가입
         </Button>
       </div>

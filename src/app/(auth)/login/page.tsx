@@ -52,7 +52,7 @@ export default function LoginPage() {
                 <FormLabel>아이디</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="아이디를 입력하세요"
+                    placeholder="학번을 입력하세요"
                     {...field}
                     className="w-full box-border"
                   />
