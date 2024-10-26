@@ -253,10 +253,19 @@ export default function SignupPage() {
               </div>
               {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
               {timeLeft !== null && timeLeft > 0 && (
-                <div className="flex items-center justify-between space-x-2 text-sm text-red-500">
-                  <p>인증 링크 만료까지: {Math.floor(timeLeft / 60)}분 {timeLeft % 60}초</p>
-                  <Link href="https://mail.sch.ac.kr" target="_blank" className="text-blue-500 underline">
-                    웹메일 확인하기
+                <div className="flex items-center justify-between p-2 bg-blue-50 rounded-md border border-blue-200">
+                  <p className="text-sm text-blue-600">
+                    인증 링크 만료까지: <span className="font-semibold">{Math.floor(timeLeft / 60)}분 {timeLeft % 60}초</span>
+                  </p>
+                  <Link 
+                    href="https://mail.sch.ac.kr" 
+                    target="_blank" 
+                    className="text-sm text-blue-500 hover:text-blue-700 transition-colors duration-200 flex items-center"
+                  >
+                    <span>웹메일 확인하기</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
                   </Link>
                 </div>
               )}
