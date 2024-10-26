@@ -29,13 +29,13 @@ export default function SignupPage() {
   const form = useForm<SigninFormData>({
     resolver: zodResolver(SigninSchema),
     defaultValues: {
-      username: localStorage.getItem("username") || "",
-      department: localStorage.getItem("department") || "",
-      name: localStorage.getItem("name") || "",
-      email: localStorage.getItem("email") || "",
+      username: "",
+      department: "",
+      name: "",
+      email: "",
       password: "",
       confirmPassword: "",
-      phone: localStorage.getItem("phone") || "",
+      phone: "",
       role: "STUDENT",
     },
   });
@@ -44,6 +44,18 @@ export default function SignupPage() {
   const debouncedEmail = useDebounce(form.watch("email"), 1000);
   const debouncedPassword = useDebounce(form.watch("password"), 500);
   const debouncedConfirmPassword = useDebounce(form.watch("confirmPassword"), 500);
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("username") || "";
+    const storedDepartment = localStorage.getItem("department") || "";
+    const storedName = localStorage.getItem("name") || "";
+    const storedEmail = localStorage.getItem("email") || "";
+
+    form.setValue("username", storedUsername);
+    form.setValue("department", storedDepartment);
+    form.setValue("name", storedName);
+    form.setValue("email", storedEmail);
+  }, []);
 
   useEffect(() => {
     const emailVerified = searchParams.get("emailVerified");
@@ -263,32 +275,36 @@ export default function SignupPage() {
                 </Button>
               </div>
               {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
-              {timeLeft !== null && (
-                <div className="flex flex-col p-2 bg-blue-50 rounded-md border border-blue-200">
-                  {timeLeft > 0 ? (
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm text-blue-600">
-                        인증 링크 만료까지: <span className="font-semibold">{`${Math.floor(timeLeft / 60)}분 ${timeLeft % 60}초`}</span>
-                      </p>
-                      <Link 
-                        href="https://mail.sch.ac.kr" 
-                        target="_blank" 
-                        className="text-sm text-blue-500 hover:text-blue-700 transition-colors duration-200 flex items-center"
-                      >
-                        <span>웹메일 확인하기</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      </Link>
+              {isEmailVerified ? (
+                  <p className="text-green-600 text-sm">이메일 인증이 완료되었습니다.</p>
+                ) : (
+                  timeLeft !== null && (
+                    <div className="flex flex-col p-2 bg-blue-50 rounded-md border border-blue-200">
+                      {timeLeft > 0 ? (
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm text-blue-600">
+                            인증 링크 만료까지: <span className="font-semibold">{`${Math.floor(timeLeft / 60)}분 ${timeLeft % 60}초`}</span>
+                          </p>
+                          <Link 
+                            href="https://mail.sch.ac.kr" 
+                            target="_blank" 
+                            className="text-sm text-blue-500 hover:text-blue-700 transition-colors duration-200 flex items-center"
+                          >
+                            <span>웹메일 확인하기</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </Link>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between">
+                          <p className="text-red-500 text-sm">인증 링크가 만료되었습니다.</p>
+                          <button onClick={handleResend} className="text-blue-500 text-sm">재전송</button>
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <div className="flex items-center justify-between">
-                      <p className="text-red-500 text-sm">인증 링크가 만료되었습니다.</p>
-                      <button onClick={handleResend} className="text-blue-500 text-sm">재전송</button>
-                    </div>
-                  )}
-                </div>
-              )}
+                  )
+                )}
             </div>
 
            <TextField control={form.control} name="phone" label="휴대폰 번호" placeholder="휴대폰 번호를 입력하세요" />
