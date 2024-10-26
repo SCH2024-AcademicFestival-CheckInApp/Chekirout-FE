@@ -29,13 +29,13 @@ export default function SignupPage() {
   const form = useForm<SigninFormData>({
     resolver: zodResolver(SigninSchema),
     defaultValues: {
-      username: "",
-      department: "",
-      name: "",
-      email: "",
+      username: localStorage.getItem("username") || "",
+      department: localStorage.getItem("department") || "",
+      name: localStorage.getItem("name") || "",
+      email: localStorage.getItem("email") || "",
       password: "",
       confirmPassword: "",
-      phone: "",
+      phone: localStorage.getItem("phone") || "",
       role: "STUDENT",
     },
   });
@@ -136,6 +136,17 @@ export default function SignupPage() {
   useEffect(() => {
     validateConfirmPassword(debouncedPassword, debouncedConfirmPassword);
   }, [debouncedPassword, debouncedConfirmPassword, validateConfirmPassword]);
+
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      localStorage.setItem("username", values.username || "");
+      localStorage.setItem("department", values.department || "");
+      localStorage.setItem("name", values.name || "");
+      localStorage.setItem("email", values.email || "");
+      localStorage.setItem("phone", values.phone || "");
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   useEffect(() => {
     const savedStartTime = localStorage.getItem("emailVerificationStartTime");
