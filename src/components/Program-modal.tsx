@@ -22,7 +22,7 @@ interface ProgramModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (programData: ProgramData) => void;
-  initialData?: ProgramData;
+  initialData?: ProgramData | null; 
   mode: "add" | "edit";
   categories: { id: number; name: string }[];
 }
