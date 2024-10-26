@@ -11,6 +11,7 @@ import { TextField, PasswordField, SelectField } from "@/components/FormField";
 import { departments } from "@/constants/constants";
 import { SigninSchema, SigninFormData } from "@/schemas/signinSchema";
 import { useDebounce } from "@/hooks/useDebounce";
+import Link from "next/link";
 
 export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,6 +21,7 @@ export default function SignupPage() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [confirmPasswordError, setConfirmPasswordError] = useState<string | null>(null);
   
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -135,6 +137,32 @@ export default function SignupPage() {
     validateConfirmPassword(debouncedPassword, debouncedConfirmPassword);
   }, [debouncedPassword, debouncedConfirmPassword, validateConfirmPassword]);
 
+  useEffect(() => {
+    const savedStartTime = localStorage.getItem("emailVerificationStartTime");
+    if (savedStartTime) {
+      const elapsedTime = Math.floor((Date.now() - parseInt(savedStartTime, 10)) / 1000);
+      const remainingTime = 300 - elapsedTime;
+      if (remainingTime > 0) {
+        setTimeLeft(remainingTime);
+        setIsEmailVerificationSent(true);
+      } else {
+        localStorage.removeItem("emailVerificationStartTime");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (timeLeft === null || timeLeft <= 0) return;
+    const timer = setInterval(() => setTimeLeft((prev) => (prev ? prev - 1 : 0)), 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  const handleResend = () => {
+    setIsEmailVerificationSent(false);
+    setTimeLeft(null);
+    localStorage.removeItem("emailVerificationStartTime");
+  };
+
   const handleEmailVerification = async () => {
     const email = form.getValues("email");
     if (!email) {
@@ -151,6 +179,10 @@ export default function SignupPage() {
       setIsEmailVerificationSent(true);
       setEmailError(null);
       console.log("인증 이메일이 발송되었습니다.");
+      
+      const currentTime = Date.now();
+      localStorage.setItem("emailVerificationStartTime", currentTime.toString()); // 시작 시간 저장
+      setTimeLeft(300); 
     } catch (error) {
       setEmailError("이메일 인증 요청 중 오류가 발생했습니다.");
     }
@@ -220,6 +252,17 @@ export default function SignupPage() {
                 </Button>
               </div>
               {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
+              {timeLeft !== null && timeLeft > 0 && (
+                <div className="flex items-center justify-between space-x-2 text-sm text-red-500">
+                  <p>인증 링크 만료까지: {Math.floor(timeLeft / 60)}분 {timeLeft % 60}초</p>
+                  <Link href="https://mail.sch.ac.kr" target="_blank" className="text-blue-500 underline">
+                    웹메일 확인하기
+                  </Link>
+                </div>
+              )}
+              {timeLeft === 0 && (
+                <p className="text-red-500 text-sm">인증 링크가 만료되었습니다. <button onClick={handleResend} className="text-blue-500">재전송</button></p>
+              )}
             </div>
 
            <TextField control={form.control} name="phone" label="휴대폰 번호" placeholder="휴대폰 번호를 입력하세요" />
