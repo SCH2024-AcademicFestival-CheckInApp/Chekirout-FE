@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -264,6 +264,7 @@ export default function SignupPage() {
   }
 
   return (
+    <Suspense fallback={<p>Loading...</p>}>
     <main className="w-[480px] h-screen flex flex-col items-center bg-white overflow-y-auto">
       <div className="text-center pt-[100px] mb-10">
         <div className="text-5xl font-black text-[#235698]">회원가입</div>
@@ -333,5 +334,6 @@ export default function SignupPage() {
         </form>
       </Form>
     </main>
+    </Suspense>
   );
 }
