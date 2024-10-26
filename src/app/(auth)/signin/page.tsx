@@ -57,12 +57,18 @@ export default function SignupPage() {
     form.setValue("email", storedEmail);
   }, []);
 
-  useEffect(() => {
-    const emailVerified = searchParams.get("emailVerified");
-    if (emailVerified === "true") {
-      setIsEmailVerified(true);
-    } 
-  }, [searchParams]);
+  function EmailVerificationCheck() {
+    const searchParams = useSearchParams();
+    
+    useEffect(() => {
+      const emailVerified = searchParams.get("emailVerified");
+      if (emailVerified === "true") {
+        setIsEmailVerified(true);
+      }
+    }, [searchParams]);
+  
+    return null; 
+  }
 
   const validateUsername = useCallback(async (username: string) => {
     if (!username) {
@@ -264,8 +270,10 @@ export default function SignupPage() {
   }
 
   return (
-    <Suspense fallback={<p>Loading...</p>}>
     <main className="w-[480px] h-screen flex flex-col items-center bg-white overflow-y-auto">
+      <Suspense fallback={null}>
+        <EmailVerificationCheck />
+      </Suspense>
       <div className="text-center pt-[100px] mb-10">
         <div className="text-5xl font-black text-[#235698]">회원가입</div>
       </div>
@@ -334,6 +342,5 @@ export default function SignupPage() {
         </form>
       </Form>
     </main>
-    </Suspense>
   );
 }
