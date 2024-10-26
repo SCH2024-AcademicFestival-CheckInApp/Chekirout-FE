@@ -61,7 +61,7 @@ export default function SignupPage() {
     const emailVerified = searchParams.get("emailVerified");
     if (emailVerified === "true") {
       setIsEmailVerified(true);
-    }
+    } 
   }, [searchParams]);
 
   const validateUsername = useCallback(async (username: string) => {
@@ -237,6 +237,18 @@ export default function SignupPage() {
       if (response.status === 200) {
         console.log("회원가입 성공:", response.data);
         alert("회원가입이 성공적으로 완료되었습니다.");
+
+        form.reset();
+        localStorage.removeItem("username");
+        localStorage.removeItem("department");
+        localStorage.removeItem("name");
+        localStorage.removeItem("email");
+        localStorage.removeItem("phone");
+
+        localStorage.removeItem("emailVerificationStartTime");
+        setIsEmailVerificationSent(false);
+        setIsEmailVerified(false);
+        setTimeLeft(null);
         router.push("/login");
       }
     } catch (error) {
