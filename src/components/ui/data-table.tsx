@@ -36,6 +36,9 @@ import { Input } from "@/components/ui/input";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  onRowSelectionModelChange?: (selectedRows: any) => void; 
+  selectedRows?: number[];  
+  searchInput?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
