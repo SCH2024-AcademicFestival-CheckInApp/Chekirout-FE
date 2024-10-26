@@ -11,6 +11,7 @@ import { TextField, PasswordField, SelectField } from "@/components/FormField";
 import { departments } from "@/constants/constants";
 import { SigninSchema, SigninFormData } from "@/schemas/signinSchema";
 import { useDebounce } from "@/hooks/useDebounce";
+import Link from "next/link";
 
 export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,6 +21,7 @@ export default function SignupPage() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [confirmPasswordError, setConfirmPasswordError] = useState<string | null>(null);
   
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -44,10 +46,22 @@ export default function SignupPage() {
   const debouncedConfirmPassword = useDebounce(form.watch("confirmPassword"), 500);
 
   useEffect(() => {
+    const storedUsername = localStorage.getItem("username") || "";
+    const storedDepartment = localStorage.getItem("department") || "";
+    const storedName = localStorage.getItem("name") || "";
+    const storedEmail = localStorage.getItem("email") || "";
+
+    form.setValue("username", storedUsername);
+    form.setValue("department", storedDepartment);
+    form.setValue("name", storedName);
+    form.setValue("email", storedEmail);
+  }, []);
+
+  useEffect(() => {
     const emailVerified = searchParams.get("emailVerified");
     if (emailVerified === "true") {
       setIsEmailVerified(true);
-    }
+    } 
   }, [searchParams]);
 
   const validateUsername = useCallback(async (username: string) => {
@@ -135,6 +149,43 @@ export default function SignupPage() {
     validateConfirmPassword(debouncedPassword, debouncedConfirmPassword);
   }, [debouncedPassword, debouncedConfirmPassword, validateConfirmPassword]);
 
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      localStorage.setItem("username", values.username || "");
+      localStorage.setItem("department", values.department || "");
+      localStorage.setItem("name", values.name || "");
+      localStorage.setItem("email", values.email || "");
+      localStorage.setItem("phone", values.phone || "");
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
+  useEffect(() => {
+    const savedStartTime = localStorage.getItem("emailVerificationStartTime");
+    if (savedStartTime) {
+      const elapsedTime = Math.floor((Date.now() - parseInt(savedStartTime, 10)) / 1000);
+      const remainingTime = 300 - elapsedTime;
+      if (remainingTime > 0) {
+        setTimeLeft(remainingTime);
+        setIsEmailVerificationSent(true);
+      } else {
+        localStorage.removeItem("emailVerificationStartTime");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (timeLeft === null || timeLeft <= 0) return;
+    const timer = setInterval(() => setTimeLeft((prev) => (prev ? prev - 1 : 0)), 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  const handleResend = () => {
+    setIsEmailVerificationSent(false);
+    setTimeLeft(null);
+    localStorage.removeItem("emailVerificationStartTime");
+  };
+
   const handleEmailVerification = async () => {
     const email = form.getValues("email");
     if (!email) {
@@ -151,6 +202,10 @@ export default function SignupPage() {
       setIsEmailVerificationSent(true);
       setEmailError(null);
       console.log("인증 이메일이 발송되었습니다.");
+      
+      const currentTime = Date.now();
+      localStorage.setItem("emailVerificationStartTime", currentTime.toString()); // 시작 시간 저장
+      setTimeLeft(300); 
     } catch (error) {
       setEmailError("이메일 인증 요청 중 오류가 발생했습니다.");
     }
@@ -182,6 +237,18 @@ export default function SignupPage() {
       if (response.status === 200) {
         console.log("회원가입 성공:", response.data);
         alert("회원가입이 성공적으로 완료되었습니다.");
+
+        form.reset();
+        localStorage.removeItem("username");
+        localStorage.removeItem("department");
+        localStorage.removeItem("name");
+        localStorage.removeItem("email");
+        localStorage.removeItem("phone");
+
+        localStorage.removeItem("emailVerificationStartTime");
+        setIsEmailVerificationSent(false);
+        setIsEmailVerified(false);
+        setTimeLeft(null);
         router.push("/login");
       }
     } catch (error) {
@@ -220,6 +287,36 @@ export default function SignupPage() {
                 </Button>
               </div>
               {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
+              {isEmailVerified ? (
+                  <p className="text-green-600 text-sm">이메일 인증이 완료되었습니다.</p>
+                ) : (
+                  timeLeft !== null && (
+                    <div className="flex flex-col p-2 bg-blue-50 rounded-md border border-blue-200">
+                      {timeLeft > 0 ? (
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm text-blue-600">
+                            인증 링크 만료까지: <span className="font-semibold">{`${Math.floor(timeLeft / 60)}분 ${timeLeft % 60}초`}</span>
+                          </p>
+                          <Link 
+                            href="https://mail.sch.ac.kr" 
+                            target="_blank" 
+                            className="text-sm text-blue-500 hover:text-blue-700 transition-colors duration-200 flex items-center"
+                          >
+                            <span>웹메일 확인하기</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </Link>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between">
+                          <p className="text-red-500 text-sm">인증 링크가 만료되었습니다.</p>
+                          <button onClick={handleResend} className="text-blue-500 text-sm">재전송</button>
+                        </div>
+                      )}
+                    </div>
+                  )
+                )}
             </div>
 
            <TextField control={form.control} name="phone" label="휴대폰 번호" placeholder="휴대폰 번호를 입력하세요" />
