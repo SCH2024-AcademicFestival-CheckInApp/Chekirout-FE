@@ -12,6 +12,7 @@ import { departments } from "@/constants/constants";
 import { SigninSchema, SigninFormData } from "@/schemas/signinSchema";
 import { useDebounce } from "@/hooks/useDebounce";
 import Link from "next/link";
+import EmailVerificationCheck from "@/components/EmailVerificationCheck";
 
 export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -56,19 +57,6 @@ export default function SignupPage() {
     form.setValue("name", storedName);
     form.setValue("email", storedEmail);
   }, []);
-
-  function EmailVerificationCheck() {
-    const searchParams = useSearchParams();
-    
-    useEffect(() => {
-      const emailVerified = searchParams.get("emailVerified");
-      if (emailVerified === "true") {
-        setIsEmailVerified(true);
-      }
-    }, [searchParams]);
-  
-    return null; 
-  }
 
   const validateUsername = useCallback(async (username: string) => {
     if (!username) {
@@ -272,7 +260,7 @@ export default function SignupPage() {
   return (
     <main className="w-[480px] h-screen flex flex-col items-center bg-white overflow-y-auto">
       <Suspense fallback={null}>
-        <EmailVerificationCheck />
+        <EmailVerificationCheck setIsEmailVerified={setIsEmailVerified} />
       </Suspense>
       <div className="text-center pt-[100px] mb-10">
         <div className="text-5xl font-black text-[#235698]">회원가입</div>
