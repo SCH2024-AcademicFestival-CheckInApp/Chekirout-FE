@@ -45,7 +45,6 @@ export default function ProgramsPage() {
   const formatDate = (timestamp: string) => {
     const date = new Date(timestamp);
     return date.toLocaleString('ko-KR', { 
-      year: 'numeric', 
       month: 'long', 
       day: 'numeric', 
       hour: '2-digit', 
@@ -54,27 +53,48 @@ export default function ProgramsPage() {
   };
 
   return (
-    <main className="w-full min-h-screen flex flex-col p-6 bg-gray-100 my-12">
-      <h1 className="text-xl font-bold text-black mb-6">프로그램 일정</h1>
-      <div className="flex flex-col gap-5">
-        {programs.map((program) => (
-          <div key={program.id} className="bg-white rounded-xl shadow-sm p-5 transition-all duration-300 hover:shadow-lg border border-indigo-100">
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="text-sm font-semibold text-black">{program.name}</h2>
-              <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-medium">
-                {program.categoryName}
-              </span>
+    <>
+      <main className="w-full min-h-screen bg-gray-100 pt-[76px] pb-20">
+        <div className="px-6 py-4">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">프로그램 일정</h1>
+          <p className="text-sm text-gray-500 mb-4">학술제의 모든 프로그램 일정을 확인하세요</p>
+        </div>
+        <div className="px-6 flex flex-col gap-4">
+          {programs.map((program) => (
+            <div 
+              key={program.id} 
+              className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 transition-all duration-300 active:scale-[0.98] hover:shadow-md"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <span className="inline-block px-3 py-1 bg-[#235698]/10 text-[#235698] rounded-full text-xs font-medium mb-2">
+                    {program.categoryName}
+                  </span>
+                  <h2 className="text-base font-bold text-gray-900 leading-snug">
+                    {program.name}
+                  </h2>
+                </div>
+                {/* <button className="ml-4 p-2 hover:bg-gray-100 rounded-full transition-colors">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+                  </svg>
+                </button> */}
+              </div>
+              <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                {program.description}
+              </p>
+              <div className="flex items-center text-sm text-gray-500">
+                <svg className="w-4 h-4 mr-2 text-[#235698]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>
+                  {formatDate(program.startTimestamp)} - {formatDate(program.endTimestamp)}
+                </span>
+              </div>
             </div>
-            <p className="text-xs text-gray-600 mb-2 line-clamp-2">{program.description}</p>
-            <div className="text-xs text-gray-800 flex items-center">
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              {formatDate(program.startTimestamp)} - {formatDate(program.endTimestamp)}
-            </div>
-          </div>
-        ))}
-      </div>
-    </main>
+          ))}
+        </div>
+      </main>
+    </>
   );
 }

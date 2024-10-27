@@ -85,7 +85,7 @@ export default function UserPage() {
    };
 
    return (
-       <main className="w-full min-h-screen flex flex-col bg-gray-100 p-4 mt-[60px] mb-[64px]">
+       <main className="w-full min-h-screen flex flex-col bg-gray-100 p-6 mt-[60px] mb-[64px]">
            <div className="flex items-center justify-between mb-2">
                <div className="flex flex-col">
                    <h2 className="text-lg font-bold text-[#004098]">스탬프</h2>
