@@ -17,10 +17,13 @@ import { useEffect } from "react";
 import { setupAxiosInterceptors } from "@/lib/axiosInterceptor";
 import { LoginFormSchema, LoginFormData } from "@/schemas/loginSchema";
 import { useLogin } from "@/hooks/useLogin";
+import { useErrorHandler } from "@/hooks/useErrorHandler";
+import ErrorModal from "@/components/ErrorModal";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { handleLogin, isLoading } = useLogin();
+  const { handleLogin: handleLoginApi, isLoading } = useLogin();
+  const { errorConfig, handleError, clearError } = useErrorHandler();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(LoginFormSchema),
@@ -34,6 +37,14 @@ export default function LoginPage() {
     setupAxiosInterceptors(router);
   }, [router]);
 
+  const handleLoginSubmit = async (data: LoginFormData) => {
+    try {
+      await handleLoginApi(data);
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
   return (
     <main className="w-[480px] h-screen flex flex-col items-center bg-white">
       <div className="text-center pt-[200px] mb-20">
@@ -42,8 +53,9 @@ export default function LoginPage() {
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(handleLogin)}
-          className="w-[328px] space-y-6">
+          onSubmit={form.handleSubmit(handleLoginSubmit)}
+          className="w-[328px] space-y-6"
+        >
           <FormField
             control={form.control}
             name="username"
@@ -81,11 +93,21 @@ export default function LoginPage() {
           />
           <Button
             type="submit"
-            className="w-[328px] h-11 bg-[#235698] text-white font-semibold rounded-lg">
-            로그인
+            disabled={isLoading}
+            className="w-[328px] h-11 bg-[#235698] text-white font-semibold rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed"
+          >
+            {isLoading ? "로그인 중..." : "로그인"}
           </Button>
         </form>
       </Form>
+
+      {errorConfig && (
+        <ErrorModal
+          message={errorConfig.message}
+          actions={errorConfig.actions}
+          isLoading={isLoading}
+        />
+      )}
     </main>
   );
 }
