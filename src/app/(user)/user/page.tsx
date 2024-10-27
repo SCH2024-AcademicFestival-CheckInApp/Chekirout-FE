@@ -82,14 +82,14 @@ export default function UserPage() {
 
             <Card className="mb-10 border-0 shadow-none">
                 <CardContent className="p-4">
-                    <div className="bg-blue-50 rounded-t-lg p-4 relative">
+                    <div className="bg-blue-50 rounded-t-lg p-4 z-1">
                         <div className="flex justify-between items-center">
                             {[...Array(totalStamps)].map((_, index) => {
                                 const stamp = stampCard?.stamps?.[index];
                                 return (
                                     <div 
                                         key={index}
-                                        className="relative"
+                                        className=""
                                         onMouseEnter={() => setHoveredStamp(index)}
                                         onMouseLeave={() => setHoveredStamp(null)}
                                         onTouchStart={() => setHoveredStamp(index)}
@@ -142,7 +142,7 @@ export default function UserPage() {
                     ))}
                 </CardContent>
             </Card>
-            <div className="text-center font-bold text-lg mt-4">
+            <div className="text-center font-bold text-lg mt-4 mb-16">
                🎉 &nbsp; 현재 <span className="text-blue-900">{totalParticipants}</span>명이 참여중이에요!
             </div>
         </main>

@@ -3,7 +3,7 @@ import { Bell } from "lucide-react";
 
 export default function TopNav() {
   return (
-    <nav className="fixed top-0 w-full max-w-[480px] h-[54px] bg-white border-b border-gray-200 flex justify-between items-center px-4">
+    <nav className="fixed z-100 top-0 w-full max-w-[480px] h-[54px] bg-white border-b border-gray-200 flex justify-between items-center px-4">
       <Link href="/user" className="text-xl font-bold text-[#235698]">
         Chekirout
       </Link>
