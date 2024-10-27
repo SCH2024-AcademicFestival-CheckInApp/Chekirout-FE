@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { getCurrentPosition } from '@/lib/geolocation';
 import { participateInProgram } from '@/api/programApi';
 
+export const runtime = 'edge';
+
 const ProgramParticipationPage = ({ params }: { params: { programId: string } }) => {
   const { programId } = params;
   const [status, setStatus] = useState<string | null>(null);
