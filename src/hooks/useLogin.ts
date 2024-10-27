@@ -12,14 +12,13 @@ export function useLogin() {
     try {
       const response = await login(data.username, data.password);
       if (response.status === 200) {
-        console.log("로그인 성공");
         localStorage.setItem("accessToken", response.data.accessToken);
         localStorage.setItem("refreshToken", response.data.refreshToken);
         router.push("/user");
       }
     } catch (error) {
       console.error("로그인 오류:", error);
-      console.log("로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
+      throw error;
     } finally {
       setIsLoading(false);
     }
