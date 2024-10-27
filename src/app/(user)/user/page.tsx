@@ -6,11 +6,6 @@ import {
  Card,
  CardContent,
 } from "@/components/ui/card"
-import {
- Tooltip,
- TooltipProvider,
- TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { useStampCard } from '@/hooks/useStampCard';
 import { EmptyStamp, Stamp } from "@/components/Stamp";
 import { setupAxiosInterceptors } from "@/lib/axiosInterceptor";
@@ -62,7 +57,7 @@ export default function UserPage() {
  
    if (isLoading) return (
        <div className="flex justify-center items-center h-screen">
-           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#235698]"></div>
+           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#004098]"></div>
        </div>
    );
    if (error) return (
@@ -90,11 +85,10 @@ export default function UserPage() {
    };
 
    return (
-       <main className="w-full min-h-screen flex flex-col p-6 mt-12 ">
-           <div className="m-4 flex items-center justify-between">
-               <div className="flex items-center">
-                   <span className="text-xl mr-2">🕹️</span>
-                   <h2 className="text-xl font-bold">스탬프</h2>
+       <main className="w-full min-h-screen flex flex-col bg-gray-100 p-4 mt-[60px] mb-[64px]">
+           <div className="flex items-center justify-between mb-2">
+               <div className="flex flex-col">
+                   <h2 className="text-lg font-bold text-[#004098]">스탬프</h2>
                </div>
                <Button
                    variant="ghost"
@@ -104,18 +98,15 @@ export default function UserPage() {
                    className="p-2 hover:bg-gray-100 rounded-full"
                >
                    <RefreshCw 
-                       className={`h-5 w-5 text-gray-600 ${isRefreshing ? 'animate-spin' : ''}`}
+                       className={`h-4 w-4 text-[#004098] ${isRefreshing ? 'animate-spin' : ''}`}
                    />
                </Button>
            </div>
 
-           <Card className="mb-10 border-0 shadow-none rounded-2xl overflow-hidden ">
-                <CardContent className="p-4 ">
-                    <div className="bg-blue-50  rounded-2xl py-8 px-6 shadow-inner relative">
-    
-                        <div className="absolute inset-0 bg-[url('/pattern.png')] opacity-5 rounded-2xl" />
-                        
-                        <div className="flex justify-between items-center relative">
+           <Card className="mb-8 border-0 rounded-2xl  bg-white shadow-sm">
+                <CardContent className="p-6">
+                    <div className="bg-white rounded-xl relative">
+                        <div className="flex justify-between items-center relative mb-8">
                             {[...Array(totalStamps)].map((_, index) => {
                                 const stamp = stampCard?.stamps?.[index];
                                 const isCompleted = index < completedStamps;
@@ -130,115 +121,132 @@ export default function UserPage() {
                                     >
                                         <div className={`
                                             relative transform transition-all duration-300 ease-out
-                                            ${isCompleted ? 'scale-100 hover:scale-110' : 'scale-95'}
+                                            ${isCompleted ? 'scale-110 hover:scale-125' : 'scale-100'}
                                             ${hoveredStamp === index ? 'z-10' : 'z-0'}
                                         `}>
-
-                                            {isCompleted && (
-                                                <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-md transform scale-110" />
+                                            {isCompleted ? (
+                                                <div className="absolute inset-0 rounded-full transform scale-125" />
+                                            ) : (
+                                                <div className="absolute inset-0 rounded-full border-2 border-gray-200" />
                                             )}
-        
                                             <div className="relative">
                                                 {isCompleted ? <Stamp /> : <EmptyStamp />}
                                             </div>
                                         </div>
 
-                                
                                         {stamp && hoveredStamp === index && (
-                                            <div className="absolute z-20 w-max -bottom-24 left-1/2 transform -translate-x-1/2">
-                                                <div className="bg-white px-6 py-3 rounded-xl shadow-lg  backdrop-blur-sm">
-                                                    <div className="text-[#235698] font-semibold mb-1">
-                                                        {stamp.categoryName}
-                                                    </div>
-                                                    <div className="text-gray-500 text-xs">
-                                                        {new Date(stamp.timestamp).toLocaleString('ko-KR', {
-                                                            month: 'long',
-                                                            day: 'numeric',
-                                                            hour: '2-digit',
-                                                            minute: '2-digit',
-                                                            hour12: false,
-                                                            weekday: 'short'
-                                                        }).replace(/\s/g, ' ').replace(',', '')}
+                                            <div className="absolute z-[200] w-max" style={{
+                                                bottom: '-80px',
+                                                left: '60%',
+                                                transform: 'translateX(-50%)'
+                                            }}>
+                                                <div className="bg-white/95 backdrop-blur-md px-3 py-2 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-50">
+                                                    <div className="flex flex-col gap-1">
+                                                        <div className="text-[#004098] font-bold text-sm tracking-tight">
+                                                            {stamp.categoryName}
+                                                        </div>
+                                                        <div className="flex items-center gap-1.5">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-[#004098]/20" />
+                                                            <div className="text-gray-500 text-xs">
+                                                                {new Date(stamp.timestamp).toLocaleString('ko-KR', {
+                                                                    month: 'long',
+                                                                    day: 'numeric',
+                                                                    hour: '2-digit',
+                                                                    minute: '2-digit',
+                                                                    hour12: false,
+                                                                    weekday: 'short'
+                                                                }).replace(/\s/g, ' ').replace(',', '')}
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div className="absolute -top-2 left-1/2 w-4 h-4 bg-white transform rotate-45 -translate-x-1/2 border-t border-l border-gray-100/50" />
+                                                <div className="absolute -top-2 left-1/2 w-2.5 h-2.5 bg-white border-t border-l border-gray-50 transform rotate-45 -translate-x-1/2 shadow-[-3px_-3px_5px_rgba(0,0,0,0.02)]" />
                                             </div>
                                         )}
                                     </div>
                                 );
                             })}
                         </div>
-                    </div>
 
-                
-                    <div className="m-8 ">
-                        <div className="flex justify-between items-center mb-2">
-                            {completedStamps === totalStamps ? (
-                                <span className="text-sm font-medium text-green-600">경품 추첨 대상자에요!</span>
+                        <div className="my-6">
+                            <div className="flex justify-between items-center mb-3">
+                                {completedStamps === totalStamps ? (
+                                    <span className="text-sm font-semibold text-[#004098]">
+                                        🎉 경품 추첨 대상자
+                                    </span>
+                                ) : (
+                                    <span className="text-sm font-medium text-gray-600">
+                                        남은 스탬프 {totalStamps - completedStamps}개
+                                    </span>
+                                )}
+                                <span className="text-base font-bold text-[#004098]">
+                                    {completedStamps}/{totalStamps}
+                                </span>
+                            </div>
+                            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                <div 
+                                    className={`h-full transition-all duration-500 ease-out ${
+                                        completedStamps === totalStamps
+                                            ? 'bg-[#004098]'
+                                            : 'bg-[#004098]'
+                                    }`}
+                                    style={{ width: `${(completedStamps / totalStamps) * 100}%` }}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="mt-6">
+                            {stampCard === null ? (
+                                <div className="bg-gray-50 rounded-xl p-4 text-center">
+                                    <p className="text-gray-600 text-sm font-medium">
+                                        프로그램에 참여해 스탬프를 모아보세요!
+                                    </p>
+                                </div>
                             ) : (
-                                <span className="text-sm font-medium text-gray-600">경품 추첨까지 {totalStamps - completedStamps}개 남았어요!</span>
+                                <div className="bg-gray-50 rounded-xl p-4 text-center">
+                                    <p className="text-gray-800 text-sm font-medium">
+                                        현재 <span className="text-[#004098] font-bold">{completedStamps}개</span>의 스탬프를 모았어요!
+                                        {completedStamps === totalStamps && (
+                                            <span className="block mt-2 text-xs text-[#004098] font-medium">
+                                                축하합니다! 모든 스탬프를 획득하셨어요!
+                                            </span>
+                                        )}
+                                    </p>
+                                </div>
                             )}
-                            <span className="text-sm font-bold text-[#235698]">
-                                {completedStamps}/{totalStamps}
-                            </span>
                         </div>
-                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                            <div 
-                                className={`h-full transition-all duration-500 ease-in-out ${
-                                    completedStamps === totalStamps
-                                        ? 'bg-green-500'
-                                        : 'bg-gradient-to-r from-[#235698] to-[#4782d3]'
-                                }`}
-                                style={{ width: `${(completedStamps / totalStamps) * 100}%` }}
-                            />
-                        </div>
-                    </div>
-
-            
-                    <div className="mt-10 ">
-                        {stampCard === null ? (
-                            <div className="bg-gradient-to-r from-blue-50 to-blue-50/50 rounded-xl p-6 backdrop-blur-sm">
-                                <p className="text-[#235698] font-semibold text-center">
-                                    프로그램에 참여해 스탬프를 모아보세요! ✨
-                                </p>
-                            </div>
-                        ) : (
-                            <div className="bg-gradient-to-r from-blue-50 to-blue-50/50 rounded-xl p-4 backdrop-blur-sm">
-                                <p className="text-[#235698] font-semibold text-center">
-                                    🎉 &nbsp;현재 <span className="text-blue-900 font-bold text-lg">{completedStamps}</span>개의 스탬프를 모았어요!
-                                    {completedStamps === totalStamps && (
-                                        <span className="block mt-2 text-sm bg-blue-100/50 rounded-lg py-2">
-                                            축하합니다! 모든 스탬프를 획득하셨어요! 
-                                        </span>
-                                    )}
-                                </p>
-                            </div>
-                        )}
                     </div>
                 </CardContent>
             </Card>
 
-           <div className="m-4 flex items-center">
-               <span className="text-xl mr-2">🏆</span>
-               <h2 className="text-xl font-bold">학과 랭킹</h2>
+           <div className="flex items-center justify-between mb-4">
+               <h2 className="text-lg font-bold text-[#004098]">실시간 학과 순위</h2>
            </div>
 
-           <Card className="bg-gray-50 border-0 m-4">
-                <CardContent className="px-6 py-4">
+           <Card className="bg-white border-0 mb-6 shadow-sm rounded-2xl">
+                <CardContent className="p-4">
                     {departmentRanking.map((dept, index) => (
-                        <div key={index} className="flex justify-between items-center p-2">
-                            <div className="flex items-center py-2">
-                                <div className="mr-6 text-sm text-blue-800">{index + 1}</div>
-                                <div className='text-sm text-gray-600'>{getDepartmentName(dept.department)}</div>
+                        <div key={index} className="flex justify-between items-center p-3 border-b last:border-b-0">
+                            <div className="flex items-center">
+                                <div className={`w-6 mr-3 font-bold ${
+                                    index === 0 ? 'text-[#004098]' :
+                                    index === 1 ? 'text-[#0052C1]' :
+                                    index === 2 ? 'text-[#0065EA]' :
+                                    'text-gray-400'
+                                }`}>
+                                    {index + 1}
+                                </div>
+                                <div className='text-gray-800 font-medium'>{getDepartmentName(dept.department)}</div>
                             </div>
-                            <div className="text-sm text-gray-600">{dept.stampCardCount}명</div>
+                            <div className="text-[#004098] font-semibold">{dept.stampCardCount}명</div>
                         </div>
                     ))}
                 </CardContent>
             </Card>
-           <div className="text-center bg-blue-50 rounded-lg p-4 mx-4 mb-16">
-              <p className="font-bold text-lg text-gray-800 ">
-                 현재 <span className="text-blue-600">{totalParticipants}</span>명이 참여중이에요!
+
+           <div className="text-center bg-white rounded-2xl p-6 mb-4 shadow-sm">
+              <p className="font-medium text-gray-800">
+                 현재 <span className="text-[#004098] font-bold">{totalParticipants}명</span>이 참여중이에요!
               </p>
            </div>
        </main>

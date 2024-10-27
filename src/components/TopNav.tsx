@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function TopNav() {
   return (
     <nav className="fixed z-[100] top-0 w-full max-w-[480px]">
-      <div className="relative bg-white/95 backdrop-blur-md shadow-lg rounded-b-3xl transition-all duration-300 hover:shadow-xl">
+      <div className="relative bg-white/95 backdrop-blur-md shadow-md rounded-b-3xl transition-all duration-300">
         <div className="absolute inset-x-0 -bottom-6 h-6 " />
         <div className="relative flex justify-between items-center h-[60px] px-6">
           <Link 
