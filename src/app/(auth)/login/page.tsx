@@ -61,7 +61,7 @@ export default function LoginPage() {
             name="username"
             render={({ field }) => (
               <FormItem className="w-[328px]">
-                <FormLabel>아이디</FormLabel>
+                <FormLabel>학번</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="학번을 입력하세요"

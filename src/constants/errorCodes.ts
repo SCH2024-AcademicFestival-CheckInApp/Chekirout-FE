@@ -1,4 +1,5 @@
 export const ErrorCode = {
+    BAD_REQUEST: 400,
     ADMIN_UNAUTHORIZED: 403,
   
     CATEGORY_NOT_FOUND: 1000,

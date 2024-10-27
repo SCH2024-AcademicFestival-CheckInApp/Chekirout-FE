@@ -53,3 +53,7 @@ export interface ErrorAction {
       'errorCode' in data
     );
   }
+
+  export function isStringError(data: unknown): data is string {
+    return typeof data === 'string';
+  }
