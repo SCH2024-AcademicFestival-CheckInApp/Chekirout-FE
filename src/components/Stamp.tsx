@@ -1,4 +1,4 @@
-export const Stamp = ({ size = 48 }: { size?: number }) => (
+export const Stamp = ({ size = 55 }: { size?: number }) => (
     <svg width={size} height={size} viewBox="0 0 55 55" fill="none" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
         <rect width="55" height="55" fill="url(#pattern0_61_208)"/>
         <defs>
@@ -10,7 +10,7 @@ export const Stamp = ({ size = 48 }: { size?: number }) => (
     </svg>
 );
 
-export const EmptyStamp = ({ size = 43 }: { size?: number }) => (
+export const EmptyStamp = ({ size = 50 }: { size?: number }) => (
     <svg width={size} height={size} viewBox="0 0 55 55" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="27.5" cy="27.5" r="25.5" fill="white" />
     </svg>
