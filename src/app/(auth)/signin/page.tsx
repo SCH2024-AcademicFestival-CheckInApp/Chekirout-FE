@@ -25,7 +25,6 @@ export default function SignupPage() {
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
   
   const form = useForm<SigninFormData>({
     resolver: zodResolver(SigninSchema),
