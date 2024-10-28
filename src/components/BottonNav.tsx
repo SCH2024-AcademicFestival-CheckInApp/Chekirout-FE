@@ -14,7 +14,7 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 z-[100] w-full max-w-[480px] h-[72px] bg-white border-t border-gray-100  rounded-t-3xl">
+    <nav className="fixed bottom-0 z-[50] w-full max-w-[480px] h-[72px] bg-white border-t border-gray-100  rounded-t-3xl">
       <div className="absolute inset-x-0 -top-4 h-4rounded-t-3xl" />
       <ul className="flex justify-around items-center h-full px-6">
         {navItems.map((item) => (
