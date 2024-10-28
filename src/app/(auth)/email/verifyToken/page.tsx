@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useState, useTransition } from 'react';
-import { verifyEmail } from '@/app/actions/verifyEmail';
 import { useRouter } from 'next/navigation';
+import { verifyEmail } from '@/app/actions/verifyEmail';
 
 export default function VerifyTokenPage() {
   const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
