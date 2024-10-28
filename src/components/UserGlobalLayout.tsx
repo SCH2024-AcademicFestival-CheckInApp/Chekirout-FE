@@ -5,7 +5,7 @@ export default function UserGloabalLayout({
 }) {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-200 ">
-      <div className="w-full max-w-[480px] min-h-screen bg-white shadow-md overflow-hidden flex flex-col items-center justify-center">
+      <div className="w-full max-w-[480px] min-h-screen bg-gray-100 shadow-md overflow-hidden flex flex-col items-center justify-center">
         {children}
       </div>
     </div>

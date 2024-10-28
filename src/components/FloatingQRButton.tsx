@@ -54,7 +54,7 @@ const FloatingQRButton: React.FC = () => {
 };
 
 const FloatingButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
-  <div className="fixed bottom-0 right-0 z-40 w-full max-w-[480px] mx-auto left-0">
+  <div className="fixed z-[100] bottom-0 right-0 z-40 w-full max-w-[480px] mx-auto left-0">
     <div className="relative w-full h-full">
       <button
         onClick={onClick}
