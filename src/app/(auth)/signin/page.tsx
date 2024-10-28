@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import axios from "axios";
 import { useCallback, useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -16,7 +15,6 @@ import Link from "next/link";
 import EmailVerificationCheck from "@/components/EmailVerificationCheck";
 
 export default function SignupPage() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [isEmailVerificationSent, setIsEmailVerificationSent] = useState(false);
@@ -34,8 +32,10 @@ export default function SignupPage() {
       username: "",
       department: "",
       name: "",
+      email: "",
       password: "",
       confirmPassword: "",
+      phone: "",
       role: "STUDENT",
     },
   });
@@ -207,19 +207,25 @@ export default function SignupPage() {
   async function onSubmit(data: SigninFormData) {
     setIsLoading(true);
     try {
-      const selectedDepartment = departments.find(
-        (dept) => dept.value === data.department
-      );
+      console.log("회원가입 시작:", data);
+
+      const requestBody = {
+        username: data.username,
+        department: data.department,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        password: data.password,
+        role: data.role,
+      };
+      console.log("요청 데이터:", requestBody);
+
       const response = await axios.post(
-        "http://ec2-15-165-241-189.ap-northeast-2.compute.amazonaws.com:8080/api/v1/signup",
-        {
-          username: data.username,
-          department: selectedDepartment ? selectedDepartment.value : "",
-          name: data.name,
-          password: data.password,
-          role: "STUDENT",
-        }
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/signup`,
+        requestBody
       );
+
+      console.log("서버 응답:", response);
 
       if (response.status === 200) {
         console.log("회원가입 성공:", response.data);
@@ -239,10 +245,14 @@ export default function SignupPage() {
         router.push("/login");
       }
     } catch (error) {
-      console.error("회원가입 오류:", error);
-      console.log("회원가입 중 오류가 발생했습니다. 다시 시도해주세요.");
+      console.error("회원가입 중 오류 발생:", error);
+      if (axios.isAxiosError(error)) {
+        console.error("에러 상태:", error.response?.status);
+        console.error("에러 데이터:", error.response?.data);
+      }
     } finally {
       setIsLoading(false);
+      console.log("회원가입 프로세스 종료");
     }
   }
 
@@ -319,10 +329,7 @@ export default function SignupPage() {
           <PasswordField control={form.control} name="confirmPassword" label="비밀번호 확인" placeholder="비밀번호를 다시 입력하세요" />
           {confirmPasswordError && <p className="text-red-500 text-sm">{confirmPasswordError}</p>}
 
-          <Button
-            type="submit"
-            className="w-[328px] h-11 bg-[#235698] text-white font-semibold rounded-lg"
-            disabled={isLoading}>
+          <Button type="submit"  className="w-full h-11 bg-[#235698] text-white font-semibold rounded-lg" disabled={isLoading || !!usernameError || !!emailError || !!passwordError || !!confirmPasswordError || !isEmailVerified}>
             {isLoading ? "처리 중..." : "회원가입"}
           </Button>
         </form>
