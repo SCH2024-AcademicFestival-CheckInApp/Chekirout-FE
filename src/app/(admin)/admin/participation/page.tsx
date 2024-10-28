@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
 
 interface ApiResponse {
-  content: User[];
+  content: any;
   totalElements: number;
   totalPages: number;
   size: number;
@@ -51,7 +51,7 @@ async function getData(
     }
 
     // isCompleted 필드를 기반으로 데이터 필터링
-    content = content.filter((user) => {
+    content = content.filter((user: any) => {
       if (isCompleted === null) return true;
       return isCompleted
         ? user.isCompleted !== null
@@ -88,7 +88,7 @@ export default function ParticipationPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isCompleted, setIsCompleted] = useState<string | null>(null);
+  const [isCompleted, setIsCompleted] = useState<any>(null);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
