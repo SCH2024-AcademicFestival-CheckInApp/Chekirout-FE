@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Bell, BellDot } from "lucide-react";
-import Image from "next/image";
 
 export default function TopNav() {
   return (
@@ -19,10 +18,10 @@ export default function TopNav() {
               2024 순천향대학교 SW융합대학 학술제
             </span>
           </Link>
-          <button className="relative group p-2">
+          <Link href="/user/notification" className="relative group p-2">
             <div className="absolute inset-0 bg-gray-100 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 ease-out transform origin-center group-hover:scale-110" />
             <Bell className="w-6 h-6 text-gray-600 group-hover:text-[#235698] transition-all duration-300 ease-out transform group-hover:rotate-12" />
-          </button>
+          </Link>
         </div>
       </div>
     </nav>
