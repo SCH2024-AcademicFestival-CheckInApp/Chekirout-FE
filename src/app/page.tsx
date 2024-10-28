@@ -10,9 +10,10 @@ export default function Home() {
     <UserGlobalLayout>
     <main className="w-full h-screen flex flex-col justify-between items-center bg-white ">
       <Splash />
-      <div className="text-center pt-[160px]">
-        <div className="text-lg text-[#235698]  mb-4">SCH SW•AI Festival</div>
-        <div className="text-5xl font-black text-[#235698]">체키라웃</div>
+      <div className="text-center pt-[120px]">
+        <div className="text-lg text-[#235698] mb-2">2024 SCH SW•AI Festival</div>
+        <div className="text-5xl font-black text-[#235698]">CHEKIROUT</div>
+        <div className="text-sm text-gray-500 mt-2">제 1회 SW융합대학 학술제 통합관리시스템</div>
       </div>
       <div className="flex-grow flex justify-center items-center">
         <Image src="/assets/icon512.png" alt="logo" width={240} height={240} />
