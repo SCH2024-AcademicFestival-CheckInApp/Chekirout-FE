@@ -261,8 +261,14 @@ export default function SignupPage() {
       <Suspense fallback={null}>
         <EmailVerificationCheck setIsEmailVerified={setIsEmailVerified} />
       </Suspense>
-      <div className="text-center pt-[100px] mb-10">
-        <div className="text-5xl font-black text-[#235698]">회원가입</div>
+      <div className="text-center pt-[60px] mb-6">
+        <div className="text-4xl font-black text-[#235698]">회원가입</div>
+      </div>
+      <div className=" text-sm text-gray-600 mb-6">
+        이미 가입하셨나요?{" "}
+        <Link href="/login" className="text-[#235698] font-semibold hover:underline">
+          로그인
+        </Link>
       </div>
 
       <Form {...form}>
