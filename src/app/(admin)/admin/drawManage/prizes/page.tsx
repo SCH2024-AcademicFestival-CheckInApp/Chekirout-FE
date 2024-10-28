@@ -183,7 +183,6 @@ export default function PrizesManagePage() {
                 </Button>
               </div>
             }
-            hideColumns={true}
           />
           <PrizeModal
             isOpen={isModalOpen}
