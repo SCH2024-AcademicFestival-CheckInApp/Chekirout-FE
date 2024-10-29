@@ -105,3 +105,44 @@ body {
     --radius: 0.5rem;
   }
 }
+
+
+/* shadcn input 컴포넌트 스타일 오버라이드 */
+.input,
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+.textarea,
+textarea,
+select,
+.select {
+  font-size: 16px !important;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.form-control input,
+.form-control textarea,
+.form-control select {
+  font-size: 16px !important;
+}
+
+.relative[data-slot="control"] input,
+.relative[data-slot="control"] textarea,
+.relative[data-slot="control"] select {
+  font-size: 16px !important;
+}
+
+.flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background {
+  font-size: 16px !important;
+}
+
+.input::placeholder,
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  font-size: 16px !important;
+}
