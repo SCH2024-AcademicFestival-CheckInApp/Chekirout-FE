@@ -303,12 +303,12 @@ export const getErrorConfig = (errorCode: number): ErrorConfig => {
             label: "다시 시도",
             action: () => window.location.reload(),
             style: "primary"
-          },
-          {
-            label: "관리자에게 문의",
-            action: () => window.location.href = '',
-            style: "secondary"
           }
+          // {
+          //   label: "관리자에게 문의",
+          //   action: () => window.location.href = '',
+          //   style: "secondary"
+          // }
         ]
       };
 
