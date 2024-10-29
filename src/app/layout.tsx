@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "../styles/globals.css";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import Head from "next/head";
+import ZoomPreventProvider from "@/components/ZoomPreventProvider";
 
 export const metadata: Metadata = {
   title: "CHEKIROUT",
@@ -41,12 +42,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover" />
       </Head>
       <body>
-        <ReactQueryProvider>
-          {children}
-        </ReactQueryProvider>
+        <ZoomPreventProvider>
+          <ReactQueryProvider>
+            {children}
+          </ReactQueryProvider>
+        </ZoomPreventProvider>
       </body>
     </html>
   );

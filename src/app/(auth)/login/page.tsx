@@ -67,7 +67,7 @@ export default function LoginPage() {
                   <Input
                     placeholder="학번을 입력하세요"
                     {...field}
-                    className="w-full box-border"
+                    className="w-full box-border !text-base"
                   />
                 </FormControl>
                 <FormMessage />
