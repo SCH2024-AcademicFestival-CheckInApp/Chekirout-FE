@@ -43,7 +43,7 @@ export default function MyPage() {
         </Button>
       </Link>
 
-      <div className="mt-8 mb-14 flex gap-4">
+      <div className="mt-8 mb-24 flex gap-4">
         <Link href="/admin" className="text-gray-500 hover:underline">
           관리자 페이지
         </Link>
