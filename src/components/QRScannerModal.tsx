@@ -28,17 +28,18 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({ isOpen, onClose, onScan
       const scanner = new Html5Qrcode('reader');
       scannerRef.current = scanner;
 
+      // 스캐너 컨테이너 크기 가져오기
+      const container = document.getElementById('reader');
+      const width = container?.clientWidth || 250;
+      const qrboxSize = Math.floor(width * 0.7);  // 컨테이너 너비의 70%
+
       const config = {
         fps: 10,
-        qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
-          const minEdgePercentage = 0.7;
-          const minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
-          const qrboxSize = Math.floor(minEdgeSize * minEdgePercentage);
-          return {
-            width: qrboxSize,
-            height: qrboxSize
-          };
+        qrbox: {
+          width: qrboxSize,
+          height: qrboxSize
         },
+        aspectRatio: 1.0
       };
 
       await scanner.start(
@@ -48,19 +49,20 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({ isOpen, onClose, onScan
         onScanFailure
       );
       setScanning(true);
+      console.log('QR 스캐너가 성공적으로 시작되었습니다');
     } catch (error) {
-      console.error('Failed to start scanner:', error);
+      console.error('스캐너 시작 실패:', error);
       alert('카메라를 시작할 수 없습니다. 카메라 권한을 확인해주세요.');
     }
   };
 
   const onScanSuccess = (decodedText: string) => {
+    console.log('QR 코드 스캔 성공:', decodedText);
     onScan(decodedText);
     onClose();
   };
 
   const onScanFailure = (error: string) => {
-    // console.error('QR code scanning failed:', error);
   };
 
   if (!isOpen) return null;
