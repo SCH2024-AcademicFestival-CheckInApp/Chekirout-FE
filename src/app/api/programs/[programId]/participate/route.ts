@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'edge';
+
 interface ParticipateRequestBody {
   latitude: number;
   longitude: number;
