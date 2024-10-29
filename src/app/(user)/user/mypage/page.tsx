@@ -26,6 +26,8 @@ export default function MyPage() {
     router.push("/");
   };
 
+  const isAdmin = userInfo?.role === 'ADMIN' || userInfo?.role === 'MASTER';
+
   return (
     <main className="relative flex flex-col items-center">
       <div className="relative mt-20">
@@ -44,13 +46,18 @@ export default function MyPage() {
       </Link>
 
       <div className="mt-8 mb-24 flex gap-4">
-        <Link href="/admin" className="text-gray-500 hover:underline">
-          관리자 페이지
-        </Link>
-        <div className="text-gray-500"> | </div>
+        {isAdmin && (
+          <>
+            <Link href="/admin" className="text-gray-500 hover:underline">
+              관리자 페이지
+            </Link>
+            <div className="text-gray-500"> | </div>
+          </>
+        )}
         <button
           onClick={handleLogout}
-          className="text-gray-500 hover:underline">
+          className="text-gray-500 hover:underline"
+        >
           로그아웃
         </button>
       </div>

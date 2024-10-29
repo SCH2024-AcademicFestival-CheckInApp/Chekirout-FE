@@ -7,6 +7,7 @@ export interface UserInfo {
   department: string;
   username: string;
   email: string;
+  role: string;
   phoneNumber: string;
   devices: string[];
 }
