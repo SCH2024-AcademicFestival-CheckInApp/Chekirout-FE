@@ -227,7 +227,7 @@ export default function EditMyPage() {
             placeholder="새 비밀번호 확인"
           />
 
-          <Device control={form.control} />
+          {/* <Device control={form.control} /> */}
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "저장 중..." : "저장하기"}
