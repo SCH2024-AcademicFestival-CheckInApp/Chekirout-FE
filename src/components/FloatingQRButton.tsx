@@ -1,99 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { QrCode } from 'lucide-react';
 import QRScannerModal from './QRScannerModal';
 import { handleQRScan } from '@/lib/qrScanHandler';
 import { getCurrentPosition } from '@/lib/geolocation';
 import { participateInProgram } from '../api/programApi';
 import StatusModal from './StatusModal';
-import { useRouter } from 'next/router';
 
 const FloatingQRButton: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-
-  const mounted = React.useRef(true);
-
-  useEffect(() => {
-    return () => {
-      mounted.current = false;
-      if (isModalOpen) {
-        handleCloseModal();
-      }
-    };
-  }, []);
-
-  const handleCloseModal = async () => {
-    try {
-      setIsModalOpen(false);
-      setStatus(null);
-      setIsLoading(false);
-
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        const streams = await navigator.mediaDevices.enumerateDevices();
-        streams.forEach(async (device) => {
-          if (device.kind === 'videoinput') {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: device.deviceId } });
-            stream.getTracks().forEach(track => track.stop());
-          }
-        });
-      }
-    } catch (error) {
-      console.error('Error cleaning up camera resources:', error);
-    }
-  };
 
   const handleScan = async (result: string) => {
-    if (!mounted.current) return;
-
     try {
       setIsLoading(true);
       const programId = handleQRScan(result);
-
-      if (!mounted.current) return;
+      
       setStatus('위치 정보 획득 중...');
       const position = await getCurrentPosition();
 
-      if (!mounted.current) return;
       setStatus('프로그램 참여 중...');
       const token = localStorage.getItem('accessToken');
 
       const message = await participateInProgram(programId, position, token);
-      if (mounted.current) {
-        setStatus(message);
-      }
+      setStatus(message);
     } catch (error) {
-      if (mounted.current) {
-        setStatus(error instanceof Error ? error.message : '오류가 발생했습니다.');
-      }
+      setStatus(error instanceof Error ? error.message : '오류가 발생했습니다.');
     } finally {
-      if (mounted.current) {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    const handleRouteChange = () => {
-      if (isModalOpen) {
-        handleCloseModal();
-      }
-    };
-
-    router.events.on('routeChangeStart', handleRouteChange);
-
-    return () => {
-      router.events.off('routeChangeStart', handleRouteChange);
-    };
-  }, [isModalOpen, router]);
 
   return (
     <>
       <FloatingButton onClick={() => setIsModalOpen(true)} />
       <QRScannerModal
         isOpen={isModalOpen}
-        onClose={handleCloseModal}
+        onClose={() => {
+          setIsModalOpen(false);
+          setStatus(null);
+          setIsLoading(false);
+        }}
         onScan={handleScan}
       />
       {isLoading && (
@@ -101,7 +48,7 @@ const FloatingQRButton: React.FC = () => {
           <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white"></div>
         </div>
       )}
-      <StatusModal status={status} onClose={() => mounted.current && setStatus(null)} />
+      <StatusModal status={status} onClose={() => setStatus(null)} />
     </>
   );
 };
