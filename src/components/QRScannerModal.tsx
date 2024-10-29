@@ -16,15 +16,29 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({ isOpen, onClose, onScan
     if (isOpen && !scanning) {
       startScanning();
     }
+
     return () => {
-      if (scannerRef.current) {
-        scannerRef.current.stop().catch(console.error);
+      if (scannerRef.current && scanning) {
+        scannerRef.current.stop()
+          .catch(() => {
+            // cleanup 중 오류 무시
+          })
+          .finally(() => {
+            scannerRef.current = null;
+            setScanning(false);
+          });
       }
     };
-  }, [isOpen]);
+  }, [isOpen, scanning]);
 
   const startScanning = async () => {
     try {
+      // 이미 스캐너가 존재하면 정리
+      if (scannerRef.current) {
+        await scannerRef.current.stop();
+        scannerRef.current = null;
+      }
+
       const scanner = new Html5Qrcode('reader');
       scannerRef.current = scanner;
 
@@ -56,13 +70,27 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({ isOpen, onClose, onScan
     }
   };
 
-  const onScanSuccess = (decodedText: string) => {
+  const onScanSuccess = async (decodedText: string) => {
     console.log('QR 코드 스캔 성공:', decodedText);
+    
+    if (scannerRef.current) {
+      try {
+        await scannerRef.current.stop();
+      } catch (error) {
+        console.error('스캐너 정지 중 오류:', error);
+      }
+      scannerRef.current = null;
+      setScanning(false);
+    }
+
     onScan(decodedText);
     onClose();
   };
 
   const onScanFailure = (error: string) => {
+    // QR 코드를 찾지 못한 일반적인 오류는 무시
+    if (error.includes('NotFoundException')) return;
+    console.error('스캔 실패:', error);
   };
 
   if (!isOpen) return null;
